@@ -14,3 +14,4 @@
 6. Include a "error" view that shows any and all error results following payment attempt.
 7. Given that I will be using Ajax only (no-real time, event-based updates on the client), server needs to check for insufficient funds regardless).
 8. With transaction items (History view), include icons to distinguish between 'gifts' vs. 'business' transactions, and 'received' vs. 'sent'
+9. 'Send Payment' view should have a "Back" navigation of some sort.

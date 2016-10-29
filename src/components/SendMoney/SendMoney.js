@@ -14,8 +14,8 @@ class SendMoney extends React.Component {
   }
 }
 
-SendMoney.displayName = 'SendMoney';
-SendMoney.propTypes = {};
-SendMoney.defaultProps = {};
+Object.assign(SendMoney, {
+  displayName: 'SendMoney',
+})
 
 export default SendMoney;
