@@ -50,7 +50,6 @@ class App extends Component {
   render() {
     const { actions, transactions } = this.props;
     const { chosenView } = this.state;
-    var view;
 
     switch(chosenView) {
       case 'send':

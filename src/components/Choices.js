@@ -13,8 +13,8 @@ const ChoicesComp = (props) => {
           <div className="panel-body">{
             views.map(view =>
               (<div key={view.name} className="form-group text-center">
-                <button type="submit" className="btn btn-primary btn-lg btn-block"
-                  onClick={(e) => onChangeView(view.name)}>{view.title}</button>
+                <button className="btn btn-default btn-lg btn-block active"
+                  type="submit" onClick={(e) => onChangeView(view.name)}>{view.title}</button>
               </div>)
             )
           }
