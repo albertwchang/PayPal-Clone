@@ -14,13 +14,20 @@ import Send from '../components/SendMoney/SendMoney';
 import History from '../components/History/History';
 const views = [
   {
-    name:'send',
+    name: 'choices',
+    title: 'What Are We Doing?'
+  }, {
+    name: 'send',
+    action: 'Send Money',
     title: 'Send Money'
   }, {
     name: 'history',
+    action: 'View Transaction History',
     title: 'Transaction History'
   }
 ];
+
+const findView = (target) => views.find(v => v.name === target) || {};
 
 /* Populated by react-webpack-redux:reducer */
 class App extends Component {
@@ -47,10 +54,8 @@ class App extends Component {
     this.setState({chosenView: viewName});
   }
 
-  render() {
+  renderSubView(chosenView) {
     const { actions, transactions } = this.props;
-    const { chosenView } = this.state;
-
     switch(chosenView) {
       case 'send':
         return <Send actions={actions} transactions={transactions} />;
@@ -61,9 +66,26 @@ class App extends Component {
         break;
 
       default:
-        return <Choices onChangeView={this.onChangeView} views={views} />;
+        return <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} />;
         break;
     };
+  }
+
+  render() {
+    const { chosenView } = this.state;
+
+    return (
+      <div className="container-fluid">
+        <div className="col-sm-6 col-sm-offset-3">
+          <div className="panel panel-default">
+            <div className="panel-heading">
+              <h2 className="panel-title text-center">{findView(chosenView).title}</h2>
+            </div>
+            {this.renderSubView(chosenView)}
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 /* Populated by react-webpack-redux:reducer
