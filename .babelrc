@@ -1,0 +1,11 @@
+{
+  "presets": [
+    "es2015-native-modules",
+    "react",
+    "airbnb"
+  ],
+  "plugins": [
+    "transform-decorators-legacy",
+    "transform-object-rest-spread"
+  ]
+}

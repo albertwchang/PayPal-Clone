@@ -1,0 +1,9 @@
+{
+  "generator-react-webpack": {
+    "appName": "pay-pal",
+    "style": "css",
+    "cssmodules": false,
+    "postcss": false,
+    "generatedWithVersion": 4
+  }
+}

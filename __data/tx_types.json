@@ -1,0 +1,9 @@
+[
+  {
+    name: 'business',
+    description: 'Goods and/or Services'
+  }, {
+    name: 'gift',
+    description: 'Friends or Family'
+  }
+]

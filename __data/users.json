@@ -1,0 +1,53 @@
+[
+  {
+    name: {
+      first: 'Albert',
+      last: 'Chang'
+    },
+    email: 'achang@xyz.com',
+    password: 'test',
+    transactions: [],
+    balance: 4500.00,
+    currencyCode: 'USD'
+  }, {
+    name: {
+      first: 'Myron',
+      last: 'Yeung'
+    },
+    email: 'myeung@abc.com',
+    password: 'test',
+    transactions: [],
+    balance: 45222500.00,
+    currencyCode: 'USD'
+  }, {
+    name: {
+      first: 'Johnny',
+      last: 'Knoxville'
+    },
+    email: 'jknoxville@jackass.com',
+    password: 'test',
+    transactions: [],
+    balance: 3500.00,
+    currencyCode: 'USD'
+  }, {
+    name: {
+      first: 'Bruce',
+      last: 'Wayne'
+    },
+    email: 'bwayne@batman.com',
+    password: 'test',
+    transactions: [],
+    balance: 7500.00,
+    currencyCode: 'USD'
+  }, {
+    name: {
+      first: 'Erlich',
+      last: 'Bachman'
+    },
+    email: 'ebachman@aviato.com',
+    password: 'test',
+    transactions: [],
+    balance: 223500.00,
+    currencyCode: 'USD'
+  }
+]
