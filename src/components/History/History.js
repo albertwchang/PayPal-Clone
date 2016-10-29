@@ -14,8 +14,8 @@ class History extends React.Component {
   }
 }
 
-History.displayName = 'History';
-History.propTypes = {};
-History.defaultProps = {};
+Object.assign(History, {
+  displayName: 'History'
+});
 
 export default History;

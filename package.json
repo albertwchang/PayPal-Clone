@@ -67,7 +67,12 @@
     "webpack-dev-server": "^2.0.0-beta"
   },
   "dependencies": {
+    "bootstrap": "^3.3.7",
+    "font-awesome": "^4.7.0",
+    "lodash": "^3.10.1",
+    "moment": "^2.15.2",
     "react": "^15.0.1",
+    "react-css-modules": "^3.7.10",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.5",
     "redux": "^3.6.0"
