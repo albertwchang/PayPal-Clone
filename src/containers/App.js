@@ -30,7 +30,7 @@ const views = [
 const findView = (target) => views.find(v => v.name === target) || {};
 
 /* Populated by react-webpack-redux:reducer */
-class App extends Component {
+class AppContainer extends Component {
   constructor(props) {
     /*--------------------------------------------------------------------
      1. Send Money
@@ -42,7 +42,7 @@ class App extends Component {
    --------------------------------------------------------------------*/
     super(props);
     this.state = {
-      chosenView: 'choices'
+      chosenView: 'history'
     };
 
     this.onChangeView = this.onChangeView.bind(this);
@@ -58,7 +58,7 @@ class App extends Component {
     const { actions, transactions } = this.props;
     switch(chosenView) {
       case 'send':
-        return <Send actions={actions} transactions={transactions} />;
+        return <Send actions={actions} />;
         break;
 
       case 'history':
@@ -93,7 +93,7 @@ class App extends Component {
  * HINT: if you adjust the initial type of your reducer, you will also have to
  *       adjust it here.
  */
-Object.assign(App, {
+Object.assign(AppContainer, {
   PropTypes: {
     actions: PropTypes.object.isRequired,
     transactions: PropTypes.object.isRequired
@@ -113,4 +113,4 @@ function mapDispatchToProps(dispatch) {
   const actionMap = { actions: bindActionCreators(actions, dispatch) };
   return actionMap;
 }
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(AppContainer);
