@@ -9,6 +9,4 @@
 /* Populated by react-webpack-redux:reducer */
 import { combineReducers } from 'redux';
 import transactions from '../reducers/transactions.js';
-//const reducers = ;
-//const combined = combineReducers({ transactions });
 module.exports = combineReducers({ transactions });

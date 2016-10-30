@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
+import formatCurrency from 'currency-formatter';
 import cssmodules from 'react-css-modules';
 import styles from './history.cssmodule.css';
 
@@ -19,6 +20,7 @@ class History extends React.Component {
             const {recipientId, senderId, txTypeId, amount, currencyCode, timestamp} = entry;
             const scenario = (senderId === 'achang@xyz.com') ? 'minus' : 'plus';
             const txTypeIcon = (txTypeId === 'gift') ? 'gift' : 'handshake-o';
+            const formattedAmt = formatCurrency.format(amount, {code: currencyCode});
 
             return(
               <tr key={index}>
@@ -28,7 +30,7 @@ class History extends React.Component {
                   <i className={"fa fa-" +txTypeIcon}></i>
                 </td>
                 <td className={scenario}>
-                  <i className={"fa fa-" +scenario}></i>{amount}
+                  <i className={"fa fa-" +scenario}></i> {formattedAmt}
                 </td>
               </tr>
             );

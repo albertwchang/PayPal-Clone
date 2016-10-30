@@ -164,7 +164,7 @@ const transactions = [
 
 //const initialState = {};
 
-function reducer(state = transactions, action) {
+function transactionsReducer(state = transactions, action) {
   /* Keep the reducer clean - do not mutate the original state. */
   // const nextState = Object.assign({}, state);
 
@@ -182,4 +182,4 @@ function reducer(state = transactions, action) {
   }
 }
 
-module.exports = reducer;
+module.exports = transactionsReducer;

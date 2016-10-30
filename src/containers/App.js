@@ -4,7 +4,10 @@
  *          This modifications only run once when the generator is invoked - if
  *          you edit them, they are not updated again.
  */
-import React, { Component, PropTypes } from 'react';
+import React, {
+  Component,
+  PropTypes
+} from 'react';
 import '../actions/';
 //import './app.css';
 import { bindActionCreators } from 'redux';
@@ -16,19 +19,19 @@ const views = [
   {
     name: 'choices',
     title: 'What Are We Doing?'
-  }, {
+  },
+  {
     name: 'send',
     action: 'Send Money',
     title: 'Send Money'
-  }, {
+  },
+  {
     name: 'history',
     action: 'View Transaction History',
     title: 'Transaction History'
   }
 ];
-
-const findView = (target) => views.find(v => v.name === target) || {};
-
+const findView = target => views.find(v => v.name === target) || {};
 /* Populated by react-webpack-redux:reducer */
 class AppContainer extends Component {
   constructor(props) {
@@ -41,45 +44,37 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = {
-      chosenView: 'history'
-    };
-
+    this.state = { chosenView: 'history' };
     this.onChangeView = this.onChangeView.bind(this);
   }
-
   onChangeView(viewName) {
     // No need to account for preventing any form events as the clicked button
     // is not wrapped around a <form> element.
-    this.setState({chosenView: viewName});
+    this.setState({ chosenView: viewName });
   }
-
   renderSubView(chosenView) {
-    const { actions, transactions } = this.props;
-    switch(chosenView) {
-      case 'send':
-        return <Send actions={actions} />;
-        break;
-
-      case 'history':
-        return <History actions={actions} transactions={transactions} />;
-        break;
-
-      default:
-        return <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} />;
-        break;
-    };
+    const {actions, transactions} = this.props;
+    switch (chosenView) {
+    case 'send':
+      return <Send actions={actions}/>;
+      break;
+    case 'history':
+      return <History actions={actions} transactions={transactions} />;
+      break;
+    default:
+      return <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])}/>;
+      break;
+    }
+    ;
   }
-
   render() {
-    const { chosenView } = this.state;
-
+    const {chosenView, currencies} = this.state;
     return (
-      <div className="container-fluid">
-        <div className="col-sm-6 col-sm-offset-3">
-          <div className="panel panel-default">
-            <div className="panel-heading">
-              <h2 className="panel-title text-center">{findView(chosenView).title}</h2>
+      <div className='container-fluid'>
+        <div className='col-sm-6 col-sm-offset-3'>
+          <div className='panel panel-default'>
+            <div className='panel-heading'>
+              <h2 className='panel-title text-center'>{findView(chosenView).title}</h2>
             </div>
             {this.renderSubView(chosenView)}
           </div>
@@ -99,12 +94,14 @@ Object.assign(AppContainer, {
     transactions: PropTypes.object.isRequired
   }
 });
-
 // boilerplate Redux
 function mapStateToProps(state) {
   // eslint-disable-line no-unused-vars
   /* Populated by react-webpack-redux:reducer */
-  const props = { transactions: state.transactions };
+  const props = {
+    transactions: state.transactions,
+    currencies: state.currencies
+  };
   return props;
 }
 function mapDispatchToProps(dispatch) {
