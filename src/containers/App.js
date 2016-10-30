@@ -15,20 +15,31 @@ import { connect } from 'react-redux';
 import Choices from '../components/Choices';
 import Send from '../components/SendPayment/SendPayment';
 import History from '../components/History/History';
+
+const header = (title) => {
+  return <div className='panel-heading'>
+    <h2 className='panel-title text-center'>{title}</h2>
+  </div>;
+};
+
+const footer = (stuff) => {
+  return <div className='panel-footer'>{stuff}</div>;
+};
+
 const views = [
   {
-    name: 'choices',
-    title: 'What Are We Doing?'
+    name: 'choices'
+    //title: 'What Are We Doing?'
   },
   {
     name: 'send',
-    action: 'Send Money',
-    title: 'Send Money'
+    action: 'Send Money'
+    //title: 'Send Money'
   },
   {
     name: 'history',
-    action: 'View Transaction History',
-    title: 'Transaction History'
+    action: 'View Transaction History'
+    //title: 'Transaction History'
   }
 ];
 const findView = target => views.find(v => v.name === target) || {};
@@ -52,32 +63,39 @@ class AppContainer extends Component {
     // is not wrapped around a <form> element.
     this.setState({ setView: viewName });
   }
-  renderSubView(setView) {
+  renderSubView() {
+    const {setView} = this.state;
     const {actions, transactions, currentUser, refs} = this.props;
     switch (setView) {
-    case 'send':
-      return <Send actions={actions} profile={currentUser} refs={refs}/>;
-    case 'history':
-      return <History actions={actions} transactions={transactions} profile={currentUser}/>;
-    default:
-      return <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} profile={currentUser}/>;
-    }
-    ;
+      case 'send':
+        return (
+          <Send actions={actions} profile={currentUser} refs={refs}>
+            {header}
+            {footer}
+          </Send>
+        );
+      case 'history':
+        return (
+          <History actions={actions} transactions={transactions} profile={currentUser}>
+            {header}
+            {footer}
+          </History>
+        );
+      default:
+        return (
+          <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} profile={currentUser}>
+            {header}
+            {footer}
+          </Choices>
+        );
+    };
   }
+
   render() {
-    const {setView} = this.state;
     return (
       <div className='container-fluid'>
         <div className='col-sm-6 col-sm-offset-3'>
-          <div className='panel panel-primary'>
-            <div className='panel-heading'>
-              <h2 className='panel-title text-center'>{findView(setView).title}</h2>
-            </div>
-            {this.renderSubView(setView)}
-            <div className='panel-footer'>
-              this is the footer
-            </div>
-          </div>
+          {this.renderSubView()}
         </div>
       </div>
     );

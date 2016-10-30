@@ -44,7 +44,7 @@ class SendPayment extends React.Component {
       message: '',
       recipient: '', // !!! Need to validate as email when sending
       txType: this.props.refs.txTypes[0].name
-    }
+    };
     this.onSetAmt = this.onSetAmt.bind(this);
     this.onSetCurrency = this.onSetCurrency.bind(this);
     this.onSetTxType = this.onSetTxType.bind(this);
@@ -94,7 +94,7 @@ class SendPayment extends React.Component {
 
   render() {
     const currencies = currencyFormatter.currencies;
-    const { profile, refs: { txTypes } } = this.props;
+    const { children: [header, footer], profile, refs: { txTypes } } = this.props;
     const { amt, currency, txType } = this.state;
     const trimmedAmt = stripDelimiters(amt, currency.thousandsSeparator);
     const formattedAmt = currencyFormatter.format(trimmedAmt, {
@@ -104,62 +104,75 @@ class SendPayment extends React.Component {
       format: '%v' // %s is the symbol and %v is the value
     });
 
+    const buttons =
+      <div className="row container-fluid">
+        <div className="btn-group btn-group-lg col-sm-5 pull-left">
+          <button type="button" className="btn btn-default btn-block active">Clear</button>
+        </div>
+        <div className="btn-group btn-group-lg col-sm-5 pull-right">
+          <button type="submit" className="btn btn-default btn-block active">Next</button>
+        </div>
+      </div>;
+
     return (
-      <div className="panel-body">
-
-        <div className="form-group" name="recipient">
-          <div className="input-group input-group-lg has-primary">
-            <span className="input-group-addon" id="recipient">
-              <i className="fa fa-user"></i>
-            </span>
-            <input className="form-control" placeholder="e.g. erlich_bachman@aviato.com"
-               type="text" aria-describedby="basic-addon1"></input>
-          </div>
-        </div>
-
-        <div className="form-group" name="amt">
-          <div className="input-group input-group-lg">
-            <div className="input-group-addon" id="amt">
-              {currency.symbol}
+      <div className='panel panel-primary'>
+        {header('Send Payment')}
+        <div className="panel-body">
+          <div className="form-group" name="recipient">
+            <div className="input-group input-group-lg has-primary">
+              <span className="input-group-addon" id="recipient">
+                <i className="fa fa-user"></i>
+              </span>
+              <input className="form-control" placeholder="e.g. erlich_bachman@aviato.com"
+                 type="text" aria-describedby="basic-addon1"></input>
             </div>
-            <input type="text" className="form-control" value={Number(trimmedAmt) && amt || ''}
-              placeholder={formattedAmt} onChange={this.onSetAmt}></input>
-            <div className="input-group-btn">
-              <button type="button" className="btn btn-default dropdown-toggle"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {currency.code}&nbsp;
-                <span className="caret"></span>
-              </button>
-              <ul className="dropdown-menu dropdown-menu-right">{
-                currencies.map((c, index) => <li key={index} onClick={this.onSetCurrency}><a href="#">{c.code}</a></li>)
+          </div>
+
+          <div className="form-group" name="amt">
+            <div className="input-group input-group-lg">
+              <div className="input-group-addon" id="amt">
+                {currency.symbol}
+              </div>
+              <input type="text" className="form-control" value={Number(trimmedAmt) && amt || ''}
+                placeholder={formattedAmt} onChange={this.onSetAmt}></input>
+              <div className="input-group-btn">
+                <button type="button" className="btn btn-default dropdown-toggle"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {currency.code}&nbsp;
+                  <span className="caret"></span>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-right">{
+                  currencies.map((c, index) => <li key={index} onClick={this.onSetCurrency}><a href="#">{c.code}</a></li>)
+                }
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="form-group has-primary" name="message">
+            <textarea type="text" className="form-control" rows="4" maxLength="220"
+              placeholder="Message (optional)" cols="100" onChange={this.onSetMessage}></textarea>
+          </div>
+
+          <div className="row container-fluid" name="transaction-type">
+            <div className="form-group">
+              <div>What's this payment for?</div>
+              <div className="btn-group btn-group-lg btn-group-vertical btn-block">{
+                txTypes.map(type => {
+                  const isSet = txType === type.name;
+                  return (
+                    <a key={type.name} type="button" className="text-center" onClick={this.onSetTxType}
+                      className={"btn btn-default btn-lg" +(isSet && ' active')} data-id={type.name}>{type.description}
+                      {isSet ? <i className="fa fa-check pull-right"></i> : ''}
+                    </a>
+                  );
+                })
               }
-              </ul>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="form-group has-primary" name="message">
-          <textarea type="text" className="form-control" rows="4" maxLength="220"
-            placeholder="Message (optional)" cols="100" onChange={this.onSetMessage}></textarea>
-        </div>
-
-        <div className="row container-fluid" name="transaction-type">
-          <div className="form-group">
-            <div>What's this payment for?</div>
-            <div className="btn-group btn-group-lg btn-group-vertical btn-block">{
-              txTypes.map(type => {
-                const isSet = txType === type.name;
-                return (
-                  <a key={type.name} type="button" className="text-center" onClick={this.onSetTxType}
-                    className={"btn btn-default btn-lg" +(isSet && ' active')} data-id={type.name}>{type.description}
-                    {isSet ? <i className="fa fa-check pull-right"></i> : ''}
-                  </a>
-                );
-              })
-            }
-            </div>
-          </div>
-        </div>
+        {footer(buttons)}
       </div>
     );
   }
