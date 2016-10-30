@@ -4,7 +4,7 @@
  * src/container/App.js accordingly.
  */
 import {} from '../actions/const';
-const transactions = [
+const initialState = [
   {
     recipientId: 'achang@xyz.com',
     senderId: 'ebachman@aviato.com',
@@ -162,9 +162,7 @@ const transactions = [
   }
 ];
 
-//const initialState = {};
-
-function transactionsReducer(state = transactions, action) {
+function transactionsReducer(state = initialState, action) {
   /* Keep the reducer clean - do not mutate the original state. */
   // const nextState = Object.assign({}, state);
 

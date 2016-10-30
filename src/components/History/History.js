@@ -8,17 +8,13 @@ import styles from './history.cssmodule.css';
 class History extends React.Component {
 
   render() {
-    //<div className="history-component" styleName="history-component">
-    //  Please edit src/components//History.js to update this component!
-    //</div>
-
-    const { transactions } = this.props;
+    const { profile, transactions } = this.props;
     return (
       <table className="table table-striped table-hover" styleName="history-component">
         <tbody className="history-component">{
           transactions.map((entry, index) => {
             const {recipientId, senderId, txTypeId, amount, currencyCode, timestamp} = entry;
-            const scenario = (senderId === 'achang@xyz.com') ? 'minus' : 'plus';
+            const scenario = (senderId === profile.email) ? 'minus' : 'plus';
             const txTypeIcon = (txTypeId === 'gift') ? 'gift' : 'handshake-o';
             const formattedAmt = formatCurrency.format(amount, {code: currencyCode});
 
@@ -46,6 +42,7 @@ Object.assign(History, {
   displayName: 'Transaction History',
   PropTypes: {
     actions: PropTypes.object.isRequired,
+    profile: PropTypes.object.isRequired,
     transactions: PropTypes.array.isRequired
   }
 });

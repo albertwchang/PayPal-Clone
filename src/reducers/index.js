@@ -8,5 +8,6 @@
  */
 /* Populated by react-webpack-redux:reducer */
 import { combineReducers } from 'redux';
+import currentUser from '../reducers/currentUser.js';
 import transactions from '../reducers/transactions.js';
-module.exports = combineReducers({ transactions });
+module.exports = combineReducers({ currentUser, transactions });

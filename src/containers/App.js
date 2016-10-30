@@ -53,22 +53,23 @@ class AppContainer extends Component {
     this.setState({ chosenView: viewName });
   }
   renderSubView(chosenView) {
-    const {actions, transactions} = this.props;
+    const {actions, transactions, currentUser} = this.props;
     switch (chosenView) {
     case 'send':
       return <Send actions={actions}/>;
       break;
     case 'history':
-      return <History actions={actions} transactions={transactions} />;
+      return <History actions={actions} transactions={transactions} profile={currentUser} />;
       break;
     default:
-      return <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])}/>;
+      return <Choices onChangeView={this.onChangeView}
+              views={views.filter(v => v['action'])} profile={currentUser} />;
       break;
     }
     ;
   }
   render() {
-    const {chosenView, currencies} = this.state;
+    const {chosenView} = this.state;
     return (
       <div className='container-fluid'>
         <div className='col-sm-6 col-sm-offset-3'>
@@ -91,6 +92,7 @@ class AppContainer extends Component {
 Object.assign(AppContainer, {
   PropTypes: {
     actions: PropTypes.object.isRequired,
+    currentUser: PropTypes.object.isRequired,
     transactions: PropTypes.object.isRequired
   }
 });
@@ -100,7 +102,7 @@ function mapStateToProps(state) {
   /* Populated by react-webpack-redux:reducer */
   const props = {
     transactions: state.transactions,
-    currencies: state.currencies
+    currentUser: state.currentUser
   };
   return props;
 }
