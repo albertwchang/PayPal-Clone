@@ -94,7 +94,7 @@ class AppContainer extends Component {
   render() {
     return (
       <div className='container-fluid'>
-        <div className='col-sm-6 col-sm-offset-3'>
+        <div className='col-sm-4 col-sm-offset-4'>
           {this.renderSubView()}
         </div>
       </div>

@@ -8,6 +8,16 @@ const currencies = currencyFormatter.currencies;
 
 // Helper functions
 
+const getBaseState = ({profile, refs}) => {
+  return {
+    amt: "0",
+    currency: currencyFormatter.findCurrency(profile.currencyCode),
+    message: '',
+    recipientId: '', // !!! Need to validate as email when sending
+    txType: refs.txTypes[0].name
+  };
+};
+
 const countDecimals = (num) => (num.split('.')[1] || []).length;
 const formatAmt = (rawValue, strippedValue, currency) => {
   var formattedAmt, decimalCnt = countDecimals(rawValue);
@@ -38,21 +48,18 @@ const stripDelimiters = (value, separator) => value.split(separator).join('');
 class SendPayment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      amt: "0",
-      currency: currencyFormatter.findCurrency(props.profile.currencyCode),
-      message: '',
-      recipient: '', // !!! Need to validate as email when sending
-      txType: this.props.refs.txTypes[0].name
-    };
+    this.state = getBaseState(props);
+    this.onSetRecipient = this.onSetRecipient.bind(this);
     this.onSetAmt = this.onSetAmt.bind(this);
     this.onSetCurrency = this.onSetCurrency.bind(this);
+    this.onSetMessage = this.onSetMessage.bind(this);
     this.onSetTxType = this.onSetTxType.bind(this);
+    this.onClear = this.onClear.bind(this);
   }
 
   onSetRecipient(el) {
-    const rawValue = el.target.value.trim();
-    this.setState({recipient: newValue});
+    const newValue = el.target.value.trim();
+    this.setState({recipientId: newValue});
   }
 
   onSetAmt(el) {
@@ -81,7 +88,7 @@ class SendPayment extends React.Component {
   }
 
   onSetMessage(el) {
-    const rawValue = el.target.value.trim();
+    const newValue = el.target.value.trim();
     this.setState({message: newValue});
   }
 
@@ -92,10 +99,14 @@ class SendPayment extends React.Component {
     })
   }
 
+  onClear(el) {
+    this.setState(getBaseState(this.props));
+  }
+
   render() {
     const currencies = currencyFormatter.currencies;
     const { children: [header, footer], profile, refs: { txTypes } } = this.props;
-    const { amt, currency, txType } = this.state;
+    const { amt, currency, message, txType, recipientId } = this.state;
     const trimmedAmt = stripDelimiters(amt, currency.thousandsSeparator);
     const formattedAmt = currencyFormatter.format(trimmedAmt, {
       decimal: currency.decimalSeparator,
@@ -107,7 +118,8 @@ class SendPayment extends React.Component {
     const buttons =
       <div className="row container-fluid">
         <div className="btn-group btn-group-lg col-sm-5 pull-left">
-          <button type="button" className="btn btn-default btn-block active">Clear</button>
+          <button type="button" className="btn btn-default btn-block active"
+            onClick={this.onClear}>Clear</button>
         </div>
         <div className="btn-group btn-group-lg col-sm-5 pull-right">
           <button type="submit" className="btn btn-default btn-block active">Next</button>
@@ -118,13 +130,14 @@ class SendPayment extends React.Component {
       <div className='panel panel-primary'>
         {header('Send Payment')}
         <div className="panel-body">
+
           <div className="form-group" name="recipient">
             <div className="input-group input-group-lg has-primary">
               <span className="input-group-addon" id="recipient">
                 <i className="fa fa-user"></i>
               </span>
               <input className="form-control" placeholder="e.g. erlich_bachman@aviato.com"
-                 type="text" aria-describedby="basic-addon1"></input>
+                type="text" value={recipientId} onChange={this.onSetRecipient}></input>
             </div>
           </div>
 
@@ -150,8 +163,9 @@ class SendPayment extends React.Component {
           </div>
 
           <div className="form-group has-primary" name="message">
-            <textarea type="text" className="form-control" rows="4" maxLength="220"
-              placeholder="Message (optional)" cols="100" onChange={this.onSetMessage}></textarea>
+            <textarea type="text" className="form-control" rows="4"
+              maxLength="140" placeholder="Message (optional, 140 char limit)"
+              cols="100" value={message} onChange={this.onSetMessage}></textarea>
           </div>
 
           <div className="row container-fluid" name="transaction-type">
