@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import MenuSelect from 'react-select';
-import currencyFormatter from 'currency-formatter';
-const currencies = currencyFormatter.currencies;
+import PaymentAmount from './PaymentAmount';
+//import currencyFormatter from 'currency-formatter';
+//const currencies = currencyFormatter.currencies;
 //import cssmodules from 'react-css-modules';
 //import styles from './sendpayment.cssmodule.css';
 
@@ -10,48 +10,20 @@ const currencies = currencyFormatter.currencies;
 
 const getBaseState = ({profile, refs}) => {
   return {
-    amt: "0",
-    currency: currencyFormatter.findCurrency(profile.currencyCode),
+    amount: "0",
+    currencyCode: profile.currencyCode,
     message: '',
     recipientId: '', // !!! Need to validate as email when sending
     txType: refs.txTypes[0].name
   };
 };
 
-const countDecimals = (num) => (num.split('.')[1] || []).length;
-const formatAmt = (rawValue, strippedValue, currency) => {
-  var formattedAmt, decimalCnt = countDecimals(rawValue);
-
-  if (decimalCnt < currency.decimalDigits) {
-    formattedAmt = currencyFormatter.format(strippedValue, {
-      precision: decimalCnt,
-      thousand: currency.thousandsSeparator,
-      format: '%v'
-    }); // e.g. 275. => 275, 275.1 => 275.1, 275.15 => 275.15
-
-    const endChar = strippedValue.endsWith(currency.decimalSeparator)
-      ? currency.decimalSeparator
-      : '';
-
-    formattedAmt = formattedAmt.concat(endChar);
-  } else {
-    formattedAmt = currencyFormatter.format(rawValue, {
-      precision: currency.decimalDigits,
-      format: '%v' // %s is the symbol and %v is the value
-    });
-  }
-
-  return formattedAmt;
-}
-const stripDelimiters = (value, separator) => value.split(separator).join('');
-
 class SendPayment extends React.Component {
   constructor(props) {
     super(props);
     this.state = getBaseState(props);
     this.onSetRecipient = this.onSetRecipient.bind(this);
-    this.onSetAmt = this.onSetAmt.bind(this);
-    this.onSetCurrency = this.onSetCurrency.bind(this);
+    this.onUpdateAmount = this.onUpdateAmount.bind(this);
     this.onSetMessage = this.onSetMessage.bind(this);
     this.onSetTxType = this.onSetTxType.bind(this);
     this.onClear = this.onClear.bind(this);
@@ -62,29 +34,10 @@ class SendPayment extends React.Component {
     this.setState({recipientId: newValue});
   }
 
-  onSetAmt(el) {
-    // These variables are coming from 'currency-formatter' npm module
-    const { currency } = this.state;
-    const rawValue = el.target.value.trim();
-
-    // delimiters specific to the raw value are removed; but NOT the decimal!
-    const strippedValue = stripDelimiters(rawValue, currency.thousandsSeparator);
-    const numberValue = parseFloat(strippedValue || 0);
-
-    // invalid characters result in nothing -- so previous state value is refreshed
-    if (!isNaN(numberValue)) {
-      // 2. Format the value based on currency definitions
-      this.setState({amt: formatAmt(rawValue, strippedValue, currency)});
-    }
-  }
-
-  onSetCurrency(el) {
-    const currencyCode = el.target.innerText;
-    if (currencyCode !== this.state.currency.code) {
-      // ??? Thought about memoization, but curency list is  < 200 records
-      // Perhaps 'currency-formatter' module already implements memoiziation
-      this.setState({currency: currencyFormatter.findCurrency(currencyCode)});
-    }
+  onUpdateAmount(key, value) {
+    const newState = {};
+    newState[key] = value;
+    this.setState(newState);
   }
 
   onSetMessage(el) {
@@ -104,17 +57,8 @@ class SendPayment extends React.Component {
   }
 
   render() {
-    const currencies = currencyFormatter.currencies;
     const { children: [header, footer], profile, refs: { txTypes } } = this.props;
-    const { amt, currency, message, txType, recipientId } = this.state;
-    const trimmedAmt = stripDelimiters(amt, currency.thousandsSeparator);
-    const formattedAmt = currencyFormatter.format(trimmedAmt, {
-      decimal: currency.decimalSeparator,
-      thousand: currency.thousandsSeparator,
-      precision: currency.decimalDigits,
-      format: '%v' // %s is the symbol and %v is the value
-    });
-
+    const { amount, currencyCode, message, txType, recipientId } = this.state;
     const buttons =
       <div className="row container-fluid">
         <div className="btn-group btn-group-lg col-sm-5 pull-left">
@@ -122,7 +66,7 @@ class SendPayment extends React.Component {
             onClick={this.onClear}>Clear</button>
         </div>
         <div className="btn-group btn-group-lg col-sm-5 pull-right">
-          <button type="submit" className="btn btn-default btn-block active">Next</button>
+          <button type="submit" className="btn btn-default btn-block active">Submit</button>
         </div>
       </div>;
 
@@ -132,7 +76,7 @@ class SendPayment extends React.Component {
         <div className="panel-body">
 
           <div className="form-group" name="recipient">
-            <div className="input-group input-group-lg has-primary">
+            <div className="input-group input-group-lg">
               <span className="input-group-addon" id="recipient">
                 <i className="fa fa-user"></i>
               </span>
@@ -141,28 +85,10 @@ class SendPayment extends React.Component {
             </div>
           </div>
 
-          <div className="form-group" name="amt">
-            <div className="input-group input-group-lg">
-              <div className="input-group-addon" id="amt">
-                {currency.symbol}
-              </div>
-              <input type="text" className="form-control" value={Number(trimmedAmt) && amt || ''}
-                placeholder={formattedAmt} onChange={this.onSetAmt}></input>
-              <div className="input-group-btn">
-                <button type="button" className="btn btn-default dropdown-toggle"
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  {currency.code}&nbsp;
-                  <span className="caret"></span>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-right">{
-                  currencies.map((c, index) => <li key={index} onClick={this.onSetCurrency}><a href="#">{c.code}</a></li>)
-                }
-                </ul>
-              </div>
-            </div>
-          </div>
+          <PaymentAmount currencyCode={currencyCode}
+            amount={amount} onUpdateAmount={this.onUpdateAmount} />
 
-          <div className="form-group has-primary" name="message">
+          <div className="form-group" name="message">
             <textarea type="text" className="form-control" rows="4"
               maxLength="140" placeholder="Message (optional, 140 char limit)"
               cols="100" value={message} onChange={this.onSetMessage}></textarea>

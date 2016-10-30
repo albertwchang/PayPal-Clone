@@ -58,44 +58,50 @@ class AppContainer extends Component {
     this.state = { setView: 'send' };
     this.onChangeView = this.onChangeView.bind(this);
   }
+
   onChangeView(viewName) {
     // No need to account for preventing any form events as the clicked button
     // is not wrapped around a <form> element.
     this.setState({ setView: viewName });
   }
-  renderSubView() {
+
+  render() {
     const {setView} = this.state;
     const {actions, transactions, currentUser, refs} = this.props;
+    var view;
+
     switch (setView) {
       case 'send':
-        return (
+        view = (
           <Send actions={actions} profile={currentUser} refs={refs}>
             {header}
             {footer}
           </Send>
         );
+        break;
+
       case 'history':
-        return (
+        view = (
           <History actions={actions} transactions={transactions} profile={currentUser}>
             {header}
             {footer}
           </History>
         );
+        break;
+
       default:
-        return (
+        view = (
           <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} profile={currentUser}>
             {header}
             {footer}
           </Choices>
         );
     };
-  }
 
-  render() {
     return (
       <div className='container-fluid'>
-        <div className='col-sm-4 col-sm-offset-4'>
-          {this.renderSubView()}
+        <div className='col-xs-6 col-xs-offset-3 col-lg-4 col-lg-offset-4'>
+          {view}
         </div>
       </div>
     );
