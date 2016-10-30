@@ -9,7 +9,7 @@ import React, {
   PropTypes
 } from 'react';
 import '../actions/';
-//import './app.css';
+import './app.css';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Choices from '../components/Choices';
@@ -44,17 +44,17 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { chosenView: 'send' };
+    this.state = { setView: 'send' };
     this.onChangeView = this.onChangeView.bind(this);
   }
   onChangeView(viewName) {
     // No need to account for preventing any form events as the clicked button
     // is not wrapped around a <form> element.
-    this.setState({ chosenView: viewName });
+    this.setState({ setView: viewName });
   }
-  renderSubView(chosenView) {
+  renderSubView(setView) {
     const {actions, transactions, currentUser, refs} = this.props;
-    switch (chosenView) {
+    switch (setView) {
     case 'send':
       return <Send actions={actions} profile={currentUser} refs={refs}/>;
     case 'history':
@@ -65,15 +65,18 @@ class AppContainer extends Component {
     ;
   }
   render() {
-    const {chosenView} = this.state;
+    const {setView} = this.state;
     return (
       <div className='container-fluid'>
         <div className='col-sm-6 col-sm-offset-3'>
-          <div className='panel panel-default'>
+          <div className='panel panel-primary'>
             <div className='panel-heading'>
-              <h2 className='panel-title text-center'>{findView(chosenView).title}</h2>
+              <h2 className='panel-title text-center'>{findView(setView).title}</h2>
             </div>
-            {this.renderSubView(chosenView)}
+            {this.renderSubView(setView)}
+            <div className='panel-footer'>
+              this is the footer
+            </div>
           </div>
         </div>
       </div>
@@ -89,23 +92,18 @@ Object.assign(AppContainer, {
   PropTypes: {
     actions: PropTypes.object.isRequired,
     currentUser: PropTypes.object.isRequired,
+    payment: PropTypes.object.isRequired,
+    refs: PropTypes.object.isRequired,
     transactions: PropTypes.object.isRequired
   }
 });
+
 // boilerplate Redux
 function mapStateToProps(state) {
-  // eslint-disable-line no-unused-vars
-  /* Populated by react-webpack-redux:reducer */
-  const props = {
-    transactions: state.transactions,
-    currentUser: state.currentUser,
-    refs: state.refs,
-    payment: state.payment
-  };
+  const props = {currentUser, payment, refs, transactions} = state;
   return props;
 }
 function mapDispatchToProps(dispatch) {
-  /* Populated by react-webpack-redux:action */
   const actions = {};
   const actionMap = { actions: bindActionCreators(actions, dispatch) };
   return actionMap;

@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import './app.css';
+import './../containers/app.css';
 
 const ChoicesComp = (props) => {
   const { onChangeView, views } = props;
