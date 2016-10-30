@@ -1,28 +1,63 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import MenuSelect from 'react-select';
-import formatCurrency from 'currency-formatter';
-const currencies = formatCurrency.currencies;
+import currencyFormatter from 'currency-formatter';
+const currencies = currencyFormatter.currencies;
 //import cssmodules from 'react-css-modules';
 //import styles from './sendpayment.cssmodule.css';
+
+const formatAmt = function(value, separator) {
+  return value.split(separator).join('');
+}
+
+const countDecimals = function(num) {
+  return (num.split('.')[1] || []).length;
+}
 
 //@cssmodules(styles)
 class SendPayment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      amt: 0,
-      chosenCurrency: formatCurrency.findCurrency(props.profile.currencyCode)
+      amt: "0",
+      chosenCurrency: currencyFormatter.findCurrency(props.profile.currencyCode)
     }
     this.onSetAmt = this.onSetAmt.bind(this);
     this.onSetCurrency = this.onSetCurrency.bind(this);
   }
 
-  onSetAmt(value) {
-    const input = parseFloat(value.target.value);
-    if (input !== NaN) {
-      console.log("input");
-      this.setState({amt: input});
+  onSetAmt(el) {
+    // empty values will be replaced w/ 0
+    const { decimalSeparator, thousandsSeparator, decimalDigits } = this.state.chosenCurrency;
+    const rawValue = el.target.value;
+    const trimmedValue = formatAmt(rawValue, thousandsSeparator);
+    const input = parseFloat(trimmedValue || 0);
+
+    // 1. Check for, and remove characters
+    if (isNaN(input)) {
+      return;
+    } else {
+      /*
+       Look at number by digit count, and divide it by 10^currentPoser
+
+       */
+      // 2. Format the value based on currency definitions
+      var formattedAmt, amtDecimals = countDecimals(rawValue);
+      if (amtDecimals < decimalDigits) {
+        formattedAmt = currencyFormatter.format(trimmedValue, {
+          precision: amtDecimals,
+          thousand: thousandsSeparator,
+          format: '%v' // %s is the symbol and %v is the value
+        });
+        formattedAmt += trimmedValue.endsWith(decimalSeparator) ? decimalSeparator : '';
+      } else {
+        formattedAmt = currencyFormatter.format(rawValue, {
+          precision: decimalDigits,
+          format: '%v' // %s is the symbol and %v is the value
+        });
+      }
+
+      this.setState({amt: formattedAmt});
     }
   }
 
@@ -30,14 +65,22 @@ class SendPayment extends React.Component {
     const currencyCode = el.target.innerText;
     if (currencyCode !== this.state.chosenCurrency.code) {
       // ??? Does it make sense to use Memoization here ???
-      this.setState({chosenCurrency: formatCurrency.findCurrency(currencyCode)});
+      this.setState({chosenCurrency: currencyFormatter.findCurrency(currencyCode)});
     }
   }
 
   render() {
+    const currencies = currencyFormatter.currencies;
     const { profile, refs: { txTypes } } = this.props;
     const { amt, chosenCurrency } = this.state;
-    const currencies = formatCurrency.currencies;
+    const { decimalSeparator, thousandsSeparator, decimalDigits } = chosenCurrency;
+    const trimmedAmt = formatAmt(amt, thousandsSeparator);
+    const formattedAmt = currencyFormatter.format(trimmedAmt, {
+      decimal: decimalSeparator,
+      thousand: thousandsSeparator,
+      precision: decimalDigits,
+      format: '%v' // %s is the symbol and %v is the value
+    });
 
     return (
       <div className="panel-body">
@@ -51,15 +94,13 @@ class SendPayment extends React.Component {
         <div className="form-group">
           <div className="input-group input-group-lg">
             <div className="input-group-addon" id="basic-addon1">
-              <i className="fa fa-money"></i>
-            </div>
-            <div className="input-group-addon" id="basic-addon1">
               {chosenCurrency.symbol}
             </div>
-            <input type="text" className="form-control" placeholder="0.00"
-              onChange={this.onSetAmt}></input>
+            <input type="text" className="form-control" value={Number(trimmedAmt) && amt || ''}
+              placeholder={Number(trimmedAmt) === 0 ? formattedAmt : ''} onChange={this.onSetAmt}></input>
             <div className="input-group-btn">
-              <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button" className="btn btn-default dropdown-toggle"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {chosenCurrency.code}&nbsp;
                 <span className="caret"></span>
               </button>
