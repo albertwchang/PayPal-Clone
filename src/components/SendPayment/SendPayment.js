@@ -20,10 +20,12 @@ class SendPayment extends React.Component {
     super(props);
     this.state = {
       amt: "0",
-      chosenCurrency: currencyFormatter.findCurrency(props.profile.currencyCode)
+      chosenCurrency: currencyFormatter.findCurrency(props.profile.currencyCode),
+      chosenTxType: this.props.refs.txTypes[0].name
     }
     this.onSetAmt = this.onSetAmt.bind(this);
     this.onSetCurrency = this.onSetCurrency.bind(this);
+    this.onSetTxType = this.onSetTxType.bind(this);
   }
 
   onSetAmt(el) {
@@ -69,10 +71,17 @@ class SendPayment extends React.Component {
     }
   }
 
+  onSetTxType(el) {
+    const txTypeId = el.target.dataset.id;
+    this.setState({
+      chosenTxType: txTypeId
+    })
+  }
+
   render() {
     const currencies = currencyFormatter.currencies;
     const { profile, refs: { txTypes } } = this.props;
-    const { amt, chosenCurrency } = this.state;
+    const { amt, chosenCurrency, chosenTxType } = this.state;
     const { decimalSeparator, thousandsSeparator, decimalDigits } = chosenCurrency;
     const trimmedAmt = formatAmt(amt, thousandsSeparator);
     const formattedAmt = currencyFormatter.format(trimmedAmt, {
@@ -84,12 +93,14 @@ class SendPayment extends React.Component {
 
     return (
       <div className="panel-body">
-        <div className="form-group input-group input-group-lg">
-          <span className="input-group-addon" id="basic-addon1">
-            <i className="fa fa-user"></i>
-          </span>
-          <input className="form-control" placeholder="e.g. erlich_bachman@aviato.com"
-             type="text" aria-describedby="basic-addon1"></input>
+        <div className="form-group">
+          <div className="input-group input-group-lg">
+            <span className="input-group-addon" id="basic-addon1">
+              <i className="fa fa-user"></i>
+            </span>
+            <input className="form-control" placeholder="e.g. erlich_bachman@aviato.com"
+               type="text" aria-describedby="basic-addon1"></input>
+          </div>
         </div>
         <div className="form-group">
           <div className="input-group input-group-lg">
@@ -108,6 +119,24 @@ class SendPayment extends React.Component {
                 currencies.map((c, index) => <li key={index} onClick={this.onSetCurrency}><a href="#">{c.code}</a></li>)
               }
               </ul>
+            </div>
+          </div>
+        </div>
+        <div className="form-group">
+          <div className="input-group">
+            <textarea type="text" className="form-control" rows="4" cols="100%" placeholder="Message (optional)"></textarea>
+          </div>
+        </div>
+        <div className="row container-fluid">
+          <div className="form-group">
+            <div>What's this payment for?</div>
+            <div className="btn-group btn-group-lg btn-group-vertical btn-block">{
+              txTypes.map(type =>
+                <a key={type.name} type="button" className="text-center" onClick={this.onSetTxType}
+                  className="btn btn-default btn-lg" data-id={type.name} selected>{type.description}
+                  {chosenTxType === type.name ? <i className="fa fa-check pull-right"></i> : ''}
+                </a>)
+            }
             </div>
           </div>
         </div>
