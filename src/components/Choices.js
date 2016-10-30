@@ -8,7 +8,7 @@ const ChoicesComp = (props) => {
       views.map(view =>
         <div key={view.name} className="form-group text-center">
           <button className="btn btn-default btn-lg btn-block active"
-                  type="submit" onClick={(e) => onChangeView(view.name)}>{view.action}</button>
+            type="submit" onClick={(e) => onChangeView(view.name)}>{view.action}</button>
         </div>
       )
     }

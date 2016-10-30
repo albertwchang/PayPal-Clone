@@ -56,14 +56,11 @@ class AppContainer extends Component {
     const {actions, transactions, currentUser, refs} = this.props;
     switch (chosenView) {
     case 'send':
-      return <Send actions={actions} profile={currentUser} refs={refs} />;
-      break;
+      return <Send actions={actions} profile={currentUser} refs={refs}/>;
     case 'history':
       return <History actions={actions} transactions={transactions} profile={currentUser}/>;
-      break;
     default:
       return <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} profile={currentUser}/>;
-      break;
     }
     ;
   }
@@ -102,7 +99,8 @@ function mapStateToProps(state) {
   const props = {
     transactions: state.transactions,
     currentUser: state.currentUser,
-    refs: state.refs
+    refs: state.refs,
+    payment: state.payment
   };
   return props;
 }
