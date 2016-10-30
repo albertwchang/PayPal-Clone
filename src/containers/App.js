@@ -4,7 +4,10 @@
  *          This modifications only run once when the generator is invoked - if
  *          you edit them, they are not updated again.
  */
-import React, { Component, PropTypes } from 'react';
+import React, {
+  Component,
+  PropTypes
+} from 'react';
 import '../actions/';
 //import './app.css';
 import { bindActionCreators } from 'redux';
@@ -14,16 +17,23 @@ import Send from '../components/SendMoney/SendMoney';
 import History from '../components/History/History';
 const views = [
   {
-    name:'send',
+    name: 'choices',
+    title: 'What Are We Doing?'
+  },
+  {
+    name: 'send',
+    action: 'Send Money',
     title: 'Send Money'
-  }, {
+  },
+  {
     name: 'history',
+    action: 'View Transaction History',
     title: 'Transaction History'
   }
 ];
-
+const findView = target => views.find(v => v.name === target) || {};
 /* Populated by react-webpack-redux:reducer */
-class App extends Component {
+class AppContainer extends Component {
   constructor(props) {
     /*--------------------------------------------------------------------
      1. Send Money
@@ -34,36 +44,44 @@ class App extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = {
-      chosenView: 'choices'
-    };
-
+    this.state = { chosenView: 'history' };
     this.onChangeView = this.onChangeView.bind(this);
   }
-
   onChangeView(viewName) {
     // No need to account for preventing any form events as the clicked button
     // is not wrapped around a <form> element.
-    this.setState({chosenView: viewName});
+    this.setState({ chosenView: viewName });
   }
-
+  renderSubView(chosenView) {
+    const {actions, transactions, currentUser} = this.props;
+    switch (chosenView) {
+    case 'send':
+      return <Send actions={actions}/>;
+      break;
+    case 'history':
+      return <History actions={actions} transactions={transactions} profile={currentUser} />;
+      break;
+    default:
+      return <Choices onChangeView={this.onChangeView}
+              views={views.filter(v => v['action'])} profile={currentUser} />;
+      break;
+    }
+    ;
+  }
   render() {
-    const { actions, transactions } = this.props;
-    const { chosenView } = this.state;
-
-    switch(chosenView) {
-      case 'send':
-        return <Send actions={actions} transactions={transactions} />;
-        break;
-
-      case 'history':
-        return <History actions={actions} transactions={transactions} />;
-        break;
-
-      default:
-        return <Choices onChangeView={this.onChangeView} views={views} />;
-        break;
-    };
+    const {chosenView} = this.state;
+    return (
+      <div className='container-fluid'>
+        <div className='col-sm-6 col-sm-offset-3'>
+          <div className='panel panel-default'>
+            <div className='panel-heading'>
+              <h2 className='panel-title text-center'>{findView(chosenView).title}</h2>
+            </div>
+            {this.renderSubView(chosenView)}
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 /* Populated by react-webpack-redux:reducer
@@ -71,18 +89,21 @@ class App extends Component {
  * HINT: if you adjust the initial type of your reducer, you will also have to
  *       adjust it here.
  */
-Object.assign(App, {
+Object.assign(AppContainer, {
   PropTypes: {
     actions: PropTypes.object.isRequired,
+    currentUser: PropTypes.object.isRequired,
     transactions: PropTypes.object.isRequired
   }
 });
-
 // boilerplate Redux
 function mapStateToProps(state) {
   // eslint-disable-line no-unused-vars
   /* Populated by react-webpack-redux:reducer */
-  const props = { transactions: state.transactions };
+  const props = {
+    transactions: state.transactions,
+    currentUser: state.currentUser
+  };
   return props;
 }
 function mapDispatchToProps(dispatch) {
@@ -91,4 +112,4 @@ function mapDispatchToProps(dispatch) {
   const actionMap = { actions: bindActionCreators(actions, dispatch) };
   return actionMap;
 }
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(AppContainer);
