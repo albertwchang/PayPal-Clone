@@ -13,7 +13,7 @@ import '../actions/';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Choices from '../components/Choices';
-import Send from '../components/SendMoney/SendMoney';
+import Send from '../components/SendPayment/SendPayment';
 import History from '../components/History/History';
 const views = [
   {
@@ -44,7 +44,7 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { chosenView: 'history' };
+    this.state = { chosenView: 'send' };
     this.onChangeView = this.onChangeView.bind(this);
   }
   onChangeView(viewName) {
@@ -53,17 +53,16 @@ class AppContainer extends Component {
     this.setState({ chosenView: viewName });
   }
   renderSubView(chosenView) {
-    const {actions, transactions, currentUser} = this.props;
+    const {actions, transactions, currentUser, refs} = this.props;
     switch (chosenView) {
     case 'send':
-      return <Send actions={actions}/>;
+      return <Send actions={actions} profile={currentUser} refs={refs} />;
       break;
     case 'history':
-      return <History actions={actions} transactions={transactions} profile={currentUser} />;
+      return <History actions={actions} transactions={transactions} profile={currentUser}/>;
       break;
     default:
-      return <Choices onChangeView={this.onChangeView}
-              views={views.filter(v => v['action'])} profile={currentUser} />;
+      return <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} profile={currentUser}/>;
       break;
     }
     ;
@@ -102,7 +101,8 @@ function mapStateToProps(state) {
   /* Populated by react-webpack-redux:reducer */
   const props = {
     transactions: state.transactions,
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    refs: state.refs
   };
   return props;
 }

@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import SendMoney from 'components//SendMoney.js';
+import SendMoney from 'components//SendPayment.js';
 
-describe('<SendMoney />', () => {
+describe('<SendPayment />', () => {
 
   let component;
   beforeEach(() => {
