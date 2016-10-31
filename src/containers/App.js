@@ -9,26 +9,34 @@ import React, {
   PropTypes
 } from 'react';
 import '../actions/';
-//import './app.css';
+import './app.css';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Choices from '../components/Choices';
-import Send from '../components/SendMoney/SendMoney';
+import SendPayment from '../components/SendPayment/SendPayment';
 import History from '../components/History/History';
+
+const header = (title) => {
+  return <div className='panel-heading'>
+    <h2 className='panel-title text-center'>{title}</h2>
+  </div>;
+};
+
+const footer = (stuff) => {
+  return <div className='panel-footer'>{stuff || <div> </div>}</div>;
+};
+
 const views = [
   {
-    name: 'choices',
-    title: 'What Are We Doing?'
+    name: 'choices'
   },
   {
     name: 'send',
-    action: 'Send Money',
-    title: 'Send Money'
+    action: 'Send Money'
   },
   {
     name: 'history',
-    action: 'View Transaction History',
-    title: 'Transaction History'
+    action: 'View Transaction History'
   }
 ];
 const findView = target => views.find(v => v.name === target) || {};
@@ -44,41 +52,56 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { chosenView: 'history' };
+    this.state = { setView: 'history' };
     this.onChangeView = this.onChangeView.bind(this);
   }
+
   onChangeView(viewName) {
     // No need to account for preventing any form events as the clicked button
     // is not wrapped around a <form> element.
-    this.setState({ chosenView: viewName });
+    viewName = ((typeof viewName === "string") ? viewName : 'choices');
+    this.setState({ setView: viewName });
   }
-  renderSubView(chosenView) {
-    const {actions, transactions, currentUser} = this.props;
-    switch (chosenView) {
-    case 'send':
-      return <Send actions={actions}/>;
-      break;
-    case 'history':
-      return <History actions={actions} transactions={transactions} profile={currentUser} />;
-      break;
-    default:
-      return <Choices onChangeView={this.onChangeView}
-              views={views.filter(v => v['action'])} profile={currentUser} />;
-      break;
-    }
-    ;
-  }
+
   render() {
-    const {chosenView} = this.state;
+    const {setView} = this.state;
+    const {actions, transactions, currentUser, refs} = this.props;
+    var view;
+
+    switch (setView) {
+      case 'send':
+        view = (
+          <SendPayment actions={actions} profile={currentUser}
+            refs={refs} onChangeView={this.onChangeView}>
+            {header}
+            {footer}
+          </SendPayment>
+        );
+        break;
+
+      case 'history':
+        view = (
+          <History actions={actions} profile={currentUser}
+            transactions={transactions} onChangeView={this.onChangeView}>
+            {header}
+            {footer}
+          </History>
+        );
+        break;
+
+      default:
+        view = (
+          <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} profile={currentUser}>
+            {header}
+            {footer}
+          </Choices>
+        );
+    };
+
     return (
       <div className='container-fluid'>
-        <div className='col-sm-6 col-sm-offset-3'>
-          <div className='panel panel-default'>
-            <div className='panel-heading'>
-              <h2 className='panel-title text-center'>{findView(chosenView).title}</h2>
-            </div>
-            {this.renderSubView(chosenView)}
-          </div>
+        <div className='col-xs-8 col-xs-offset-2 col-lg-6 col-lg-offset-3'>
+          {view}
         </div>
       </div>
     );
@@ -93,21 +116,18 @@ Object.assign(AppContainer, {
   PropTypes: {
     actions: PropTypes.object.isRequired,
     currentUser: PropTypes.object.isRequired,
+    payment: PropTypes.object.isRequired,
+    refs: PropTypes.object.isRequired,
     transactions: PropTypes.object.isRequired
   }
 });
+
 // boilerplate Redux
 function mapStateToProps(state) {
-  // eslint-disable-line no-unused-vars
-  /* Populated by react-webpack-redux:reducer */
-  const props = {
-    transactions: state.transactions,
-    currentUser: state.currentUser
-  };
+  const props = {currentUser, payment, refs, transactions} = state;
   return props;
 }
 function mapDispatchToProps(dispatch) {
-  /* Populated by react-webpack-redux:action */
   const actions = {};
   const actionMap = { actions: bindActionCreators(actions, dispatch) };
   return actionMap;

@@ -1,16 +1,24 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import formatCurrency from 'currency-formatter';
-import cssmodules from 'react-css-modules';
-import styles from './history.cssmodule.css';
+//import cssmodules from 'react-css-modules';
+//import styles from './history.cssmodule.css';
 
-@cssmodules(styles)
-class History extends React.Component {
+//@cssmodules(styles)
+const History = (props) => {
+  const { children: [header, footer], onChangeView, profile, transactions } = props;
+  const buttons =
+    <div className="row">
+      <div className="btn-group btn-group-lg col-sm-12">
+        <button className="btn btn-default btn-block active"
+          type="button" onClick={onChangeView}>Back</button>
+      </div>
+    </div>;
 
-  render() {
-    const { profile, transactions } = this.props;
-    return (
-      <table className="table table-striped table-hover" styleName="history-component">
+  return (
+    <div className='panel panel-primary'>
+      {header('Transaction History')}
+      <table className="table table-striped table-hover">
         <tbody className="history-component">{
           transactions.map((entry, index) => {
             const {recipientId, senderId, txTypeId, amount, currencyCode, timestamp} = entry;
@@ -34,14 +42,17 @@ class History extends React.Component {
         }
         </tbody>
       </table>
-    );
-  }
+
+      {footer(buttons)}
+    </div>
+  );
 }
 
 Object.assign(History, {
   displayName: 'Transaction History',
   PropTypes: {
     actions: PropTypes.object.isRequired,
+    onChangeView: PropTypes.func.isRequired,
     profile: PropTypes.object.isRequired,
     transactions: PropTypes.array.isRequired
   }
