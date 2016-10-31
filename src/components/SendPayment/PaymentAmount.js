@@ -65,7 +65,7 @@ class PaymentAmount extends React.Component {
     if (!isNaN(numberValue)) {
       // 2. Format the value based on currency definitions
       const newAmount = formatAmount(rawValue, strippedValue, currency);
-      this.props.onUpdateAmount('amount', newAmount);
+      this.props.onUpdateParam('amount', newAmount);
     }
   }
 
@@ -74,7 +74,7 @@ class PaymentAmount extends React.Component {
     if (currencyCode !== this.state.currency.code) {
       // ??? Thought about memoization, but curency list is  < 200 records
       // Perhaps 'currency-formatter' module already implements memoiziation
-      this.props.onUpdateAmount('currencyCode', currencyCode);
+      this.props.onUpdateParam('currencyCode', currencyCode);
     }
   }
 
@@ -121,7 +121,7 @@ Object.assign(PaymentAmount, {
   PropTypes: {
     amount: PropTypes.string.isRequired,
     currencyCode: PropTypes.string.isRequired,
-    onUpdateAmount: PropTypes.func.isRequired
+    onUpdateParam: PropTypes.func.isRequired
   }
 });
 

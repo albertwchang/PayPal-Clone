@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
+import emailChecker from 'email-validator';
 import moment from 'moment';
 import PaymentAmount from './PaymentAmount';
+import Recipient from './Recipient';
 //import currencyFormatter from 'currency-formatter';
 //const currencies = currencyFormatter.currencies;
 //import cssmodules from 'react-css-modules';
@@ -22,26 +24,21 @@ class SendPayment extends React.Component {
   constructor(props) {
     super(props);
     this.state = getBaseState(props);
-    this.onSetRecipient = this.onSetRecipient.bind(this);
-    this.onUpdateAmount = this.onUpdateAmount.bind(this);
+    this.onUpdateParam = this.onUpdateParam.bind(this);
     this.onSetMessage = this.onSetMessage.bind(this);
     this.onSetTxType = this.onSetTxType.bind(this);
     this.onClear = this.onClear.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
-  onSetRecipient(el) {
-    const newValue = el.target.value.trim();
-    this.setState({recipientId: newValue});
-  }
-
-  onUpdateAmount(key, value) {
+  onUpdateParam(key, value) {
     const newState = {};
     newState[key] = value;
     this.setState(newState);
   }
 
   onSetMessage(el) {
-    const newValue = el.target.value.trim();
+    const newValue = el.target.value;
     this.setState({message: newValue});
   }
 
@@ -56,17 +53,25 @@ class SendPayment extends React.Component {
     this.setState(getBaseState(this.props));
   }
 
+  onSubmit(el) {
+    // Check all state variables
+    console.log("Current data: ", this.state);
+    // 1. Make a copy of current state, and trim all inputs
+    // 2. Validate each input against list of criteria/conditions
+  }
+
   render() {
     const { children: [header, footer], profile, refs: { txTypes } } = this.props;
     const { amount, currencyCode, message, txType, recipientId } = this.state;
-    const buttons =
+    const viewButtons =
       <div className="row container-fluid">
         <div className="btn-group btn-group-lg col-sm-5 pull-left">
           <button type="button" className="btn btn-default btn-block active"
             onClick={this.onClear}>Clear</button>
         </div>
         <div className="btn-group btn-group-lg col-sm-5 pull-right">
-          <button type="submit" className="btn btn-default btn-block active">Submit</button>
+          <button type="submit" className="btn btn-default btn-block active"
+            onClick={this.onSubmit}>Submit</button>
         </div>
       </div>;
 
@@ -74,19 +79,10 @@ class SendPayment extends React.Component {
       <div className='panel panel-primary'>
         {header('Send Payment')}
         <div className="panel-body">
-
-          <div className="form-group" name="recipient">
-            <div className="input-group input-group-lg">
-              <span className="input-group-addon" id="recipient">
-                <i className="fa fa-user"></i>
-              </span>
-              <input className="form-control" placeholder="e.g. erlich_bachman@aviato.com"
-                type="text" value={recipientId} onChange={this.onSetRecipient}></input>
-            </div>
-          </div>
-
+          <Recipient recipientEmail={recipientId}
+            myEmail={profile.email} onUpdateParam={this.onUpdateParam} />
           <PaymentAmount currencyCode={currencyCode}
-            amount={amount} onUpdateAmount={this.onUpdateAmount} />
+            amount={amount} onUpdateParam={this.onUpdateParam} />
 
           <div className="form-group" name="message">
             <textarea type="text" className="form-control" rows="4"
@@ -112,7 +108,7 @@ class SendPayment extends React.Component {
             </div>
           </div>
         </div>
-        {footer(buttons)}
+        {footer(viewButtons)}
       </div>
     );
   }
