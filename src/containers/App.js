@@ -29,17 +29,14 @@ const footer = (stuff) => {
 const views = [
   {
     name: 'choices'
-    //title: 'What Are We Doing?'
   },
   {
     name: 'send',
-    action: 'SendPayment Money'
-    //title: 'SendPayment Money'
+    action: 'Send Money'
   },
   {
     name: 'history',
     action: 'View Transaction History'
-    //title: 'Transaction History'
   }
 ];
 const findView = target => views.find(v => v.name === target) || {};
@@ -47,7 +44,7 @@ const findView = target => views.find(v => v.name === target) || {};
 class AppContainer extends Component {
   constructor(props) {
     /*--------------------------------------------------------------------
-     1. SendPayment Money
+     1. Send Money
       A) Loading View
       B) Success View
       C) Error View
@@ -55,7 +52,7 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { setView: 'choices' };
+    this.state = { setView: 'history' };
     this.onChangeView = this.onChangeView.bind(this);
   }
 
@@ -84,7 +81,8 @@ class AppContainer extends Component {
 
       case 'history':
         view = (
-          <History actions={actions} transactions={transactions} profile={currentUser}>
+          <History actions={actions} profile={currentUser}
+            transactions={transactions} onChangeView={this.onChangeView}>
             {header}
             {footer}
           </History>
@@ -102,7 +100,7 @@ class AppContainer extends Component {
 
     return (
       <div className='container-fluid'>
-        <div className='col-xs-6 col-xs-offset-3 col-lg-4 col-lg-offset-4'>
+        <div className='col-xs-8 col-xs-offset-2 col-lg-6 col-lg-offset-3'>
           {view}
         </div>
       </div>
