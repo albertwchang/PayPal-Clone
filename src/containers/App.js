@@ -13,7 +13,7 @@ import './app.css';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Choices from '../components/Choices';
-import Send from '../components/SendPayment/SendPayment';
+import SendPayment from '../components/SendPayment/SendPayment';
 import History from '../components/History/History';
 
 const header = (title) => {
@@ -23,7 +23,7 @@ const header = (title) => {
 };
 
 const footer = (stuff) => {
-  return <div className='panel-footer'>{stuff}</div>;
+  return <div className='panel-footer'>{stuff || <div> </div>}</div>;
 };
 
 const views = [
@@ -33,8 +33,8 @@ const views = [
   },
   {
     name: 'send',
-    action: 'Send Money'
-    //title: 'Send Money'
+    action: 'SendPayment Money'
+    //title: 'SendPayment Money'
   },
   {
     name: 'history',
@@ -47,7 +47,7 @@ const findView = target => views.find(v => v.name === target) || {};
 class AppContainer extends Component {
   constructor(props) {
     /*--------------------------------------------------------------------
-     1. Send Money
+     1. SendPayment Money
       A) Loading View
       B) Success View
       C) Error View
@@ -55,13 +55,14 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { setView: 'send' };
+    this.state = { setView: 'choices' };
     this.onChangeView = this.onChangeView.bind(this);
   }
 
   onChangeView(viewName) {
     // No need to account for preventing any form events as the clicked button
     // is not wrapped around a <form> element.
+    viewName = ((typeof viewName === "string") ? viewName : 'choices');
     this.setState({ setView: viewName });
   }
 
@@ -73,10 +74,11 @@ class AppContainer extends Component {
     switch (setView) {
       case 'send':
         view = (
-          <Send actions={actions} profile={currentUser} refs={refs}>
+          <SendPayment actions={actions} profile={currentUser}
+            refs={refs} onChangeView={this.onChangeView}>
             {header}
             {footer}
-          </Send>
+          </SendPayment>
         );
         break;
 

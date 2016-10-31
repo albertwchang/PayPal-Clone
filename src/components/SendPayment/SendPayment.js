@@ -65,11 +65,15 @@ class SendPayment extends React.Component {
     const { amount, currencyCode, message, txType, recipientId } = this.state;
     const viewButtons =
       <div className="row container-fluid">
-        <div className="btn-group btn-group-lg col-sm-5 pull-left">
+        <div className="btn-group btn-group-lg col-sm-4 pull-left">
+          <button type="button" className="btn btn-default btn-block active"
+            onClick={this.props.onChangeView}>Back</button>
+        </div>
+        <div className="btn-group btn-group-lg col-sm-4">
           <button type="button" className="btn btn-default btn-block active"
             onClick={this.onClear}>Clear</button>
         </div>
-        <div className="btn-group btn-group-lg col-sm-5 pull-right">
+        <div className="btn-group btn-group-lg col-sm-4 pull-right">
           <button type="submit" className="btn btn-default btn-block active"
             onClick={this.onSubmit}>Submit</button>
         </div>
