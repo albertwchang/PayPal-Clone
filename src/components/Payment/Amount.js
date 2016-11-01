@@ -86,14 +86,16 @@ class PaymentAmount extends React.Component {
     const currencySettings = {code, format: '%v'};
     var uiValue = '';
 
-    if (amount > 0 && amount < denominator) {
+    if (amount < denominator) {
       uiValue = (amount / denominator).toString();
     } else {
       // find position from right of number based on currency decimal digits
       uiValue = amount.toString();
       const leftValue = uiValue.substr(0, uiValue.length - decimalDigits);
       const rightValue = uiValue.substr(uiValue.length - decimalDigits);
-      uiValue = leftValue.concat(decimalSeparator).concat(rightValue);
+      uiValue = leftValue
+        .concat(currencyFormatter.defaultCurrency.decimalSeparator)
+        .concat(rightValue);
     }
 
     console.log(uiValue);
