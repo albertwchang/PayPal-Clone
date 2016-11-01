@@ -1,10 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import formatCurrency from 'currency-formatter';
-//import cssmodules from 'react-css-modules';
-//import styles from './history.cssmodule.css';
 
-//@cssmodules(styles)
 const History = (props) => {
   const { children: [header, footer], onChangeView, profile, transactions } = props;
   const buttons =
