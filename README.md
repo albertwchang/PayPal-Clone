@@ -31,8 +31,7 @@
 3. Run 'npm install webpack -g'
 4. Run 'npm install webpack-dev-server -g'
 5. (Despite seeing error messages regarding peer dependencies) Run 'npm install webpack@2.1.0-beta.6'
-6. Lastly, run 'npm start'. Internet Browser will eventually manifest, and run on http://localhost:8000.
-Since the app is not running anything else, e.g. server no other software should be needed for installation at this point.
+6. Lastly, run 'npm start'. Internet browser will navigate to http://localhost:4567. No other installs needed as app is currently not running an app server
 
 *** You can run the app in Webstorm by adding an NPM script...
 ![Screen Shot 2016-10-31 at 4.59.04 PM.png](https://bitbucket.org/repo/xbaz94/images/1407538555-Screen%20Shot%202016-10-31%20at%204.59.04%20PM.png)
