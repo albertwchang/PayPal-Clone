@@ -5,11 +5,5 @@ import configureStore from './stores';
 import App from './containers/App';
 
 const store = configureStore();
-
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-
-  document.getElementById('app')
-);
+const Application = <Provider store={store}><App /></Provider>;
+render(Application, document.getElementById('app'));

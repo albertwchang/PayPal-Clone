@@ -13,7 +13,7 @@ import './app.css';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Choices from '../components/Choices';
-import SendPayment from '../components/SendPayment/SendPayment';
+import SendPayment from '../components/Payment/Payment';
 import History from '../components/History/History';
 
 const header = (title) => {
@@ -31,7 +31,7 @@ const views = [
     name: 'choices'
   },
   {
-    name: 'send',
+    name: 'payment',
     action: 'Send Money'
   },
   {
@@ -52,7 +52,7 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { setView: 'choices' };
+    this.state = { setView: 'payment' };
     this.onChangeView = this.onChangeView.bind(this);
   }
 
@@ -69,7 +69,7 @@ class AppContainer extends Component {
     var view;
 
     switch (setView) {
-      case 'send':
+      case 'payment':
         view = (
           <SendPayment actions={actions} profile={currentUser}
             refs={refs} onChangeView={this.onChangeView}>
@@ -100,18 +100,14 @@ class AppContainer extends Component {
 
     return (
       <div className='container-fluid'>
-        <div className='col-xs-8 col-xs-offset-2 col-lg-6 col-lg-offset-3'>
+        <div className='col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3'>
           {view}
         </div>
       </div>
     );
   }
 }
-/* Populated by react-webpack-redux:reducer
- *
- * HINT: if you adjust the initial type of your reducer, you will also have to
- *       adjust it here.
- */
+
 Object.assign(AppContainer, {
   PropTypes: {
     actions: PropTypes.object.isRequired,
