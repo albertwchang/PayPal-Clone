@@ -8,35 +8,9 @@ const currencies = currencyFormatter.currencies;
 
 // Helper functions
 const countDecimals = (num, decimalChar) => (num.split(decimalChar)[1] || []).length;
-const convertDecimal = (value, oldDecimal, newDecimal) => value.replace(oldDecimal, newDecimal);
 const stripDelimiters = (value, separator) => value.split(separator).join('');
-const formatAmount = (inputValue, bareValue, currency) => {
-  var formattedAmount, decimalCnt = countDecimals(inputValue, currency.decimalSeparator);
 
-  if (decimalCnt < currency.decimalDigits) {
-    formattedAmount = currencyFormatter.format(bareValue, {
-      decimal: currency.decimalSeparator,
-      precision: decimalCnt,
-      thousand: currency.thousandsSeparator,
-      format: '%v'
-    }); // e.g. 275. => 275, 275.1 => 275.1, 275.15 => 275.15
-
-    const endChar = bareValue.endsWith(currency.decimalSeparator)
-      ? currency.decimalSeparator
-      : '';
-
-    formattedAmount = formattedAmount.concat(endChar);
-  } else {
-    formattedAmount = currencyFormatter.format(inputValue, {
-      precision: currency.decimalDigits,
-      format: '%v' // %s is the symbol and %v is the value
-    });
-  }
-
-  return formattedAmount;
-};
-
-class PaymentAmount extends React.Component {
+class Amount extends React.Component {
   constructor(props) {
     super(props);
     this.onSetAmount = this.onSetAmount.bind(this);
@@ -81,15 +55,21 @@ class PaymentAmount extends React.Component {
   render() {
     const { currency: { code, decimalSeparator, decimalDigits, symbol } } = this.state;
     const { amount } = this.props;
-    //const numberValue = parseInt(amount);
     const denominator = Math.pow(10, decimalDigits);
     const currencySettings = {code, format: '%v'};
     var uiValue = '';
 
+    /*
+      STORY: 'props.amount' is expected to be a whole number (without decimals!).
+      It is used to create a formatted version based on currently-selected currency
+     */
     if (amount < denominator) {
+      /* Any amount less than denominator can be divided by it in order to get
+        decimal value */
       uiValue = (amount / denominator).toString();
     } else {
-      // find position from right of number based on currency decimal digits
+      /* Values with digits > currency decimal digits required decimal decimal
+        separator insertion */
       uiValue = amount.toString();
       const leftValue = uiValue.substr(0, uiValue.length - decimalDigits);
       const rightValue = uiValue.substr(uiValue.length - decimalDigits);
@@ -98,7 +78,6 @@ class PaymentAmount extends React.Component {
         .concat(rightValue);
     }
 
-    console.log(uiValue);
     uiValue = parseFloat(uiValue) && currencyFormatter.format(uiValue, currencySettings) || '';
     const placeholderValue = currencyFormatter.format(0, currencySettings);
 
@@ -129,8 +108,8 @@ class PaymentAmount extends React.Component {
   }
 }
 
-Object.assign(PaymentAmount, {
-  displayName: 'PaymentAmount',
+Object.assign(Amount, {
+  displayName: 'Payment Amount',
   PropTypes: {
     amount: PropTypes.string.isRequired,
     currencyCode: PropTypes.string.isRequired,
@@ -138,4 +117,4 @@ Object.assign(PaymentAmount, {
   }
 });
 
-export default PaymentAmount;
+export default Amount;

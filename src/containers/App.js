@@ -107,11 +107,7 @@ class AppContainer extends Component {
     );
   }
 }
-/* Populated by react-webpack-redux:reducer
- *
- * HINT: if you adjust the initial type of your reducer, you will also have to
- *       adjust it here.
- */
+
 Object.assign(AppContainer, {
   PropTypes: {
     actions: PropTypes.object.isRequired,
