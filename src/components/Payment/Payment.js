@@ -1,18 +1,18 @@
 import React, { Component, PropTypes } from 'react';
 import emailChecker from 'email-validator';
 import moment from 'moment';
-import PaymentAmount from './PaymentAmount';
+import PaymentAmount from './Amount';
 import Recipient from './Recipient';
 //import currencyFormatter from 'currency-formatter';
 //const currencies = currencyFormatter.currencies;
 //import cssmodules from 'react-css-modules';
-//import styles from './sendpayment.cssmodule.css';
+//import styles from './payment.cssmodule.css';
 
 // Helper functions
 
 const getBaseState = ({profile, refs}) => {
   return {
-    amount: "0",
+    amount: "",
     currencyCode: profile.currencyCode,
     message: '',
     recipientId: '', // !!! Need to validate as email when sending
@@ -65,15 +65,17 @@ class SendPayment extends React.Component {
     const { amount, currencyCode, message, txType, recipientId } = this.state;
     const viewButtons =
       <div className="row">
-        <div className="btn-group btn-group-lg col-sm-4 pull-left">
+        <div className="btn-group btn-group-lg col-sm-2 pull-left">
           <button type="button" className="btn btn-default btn-block active"
-            onClick={onChangeView}>Back</button>
+            onClick={onChangeView}>
+            <i className="fa fa-chevron-circle-left"></i>
+          </button>
         </div>
-        <div className="btn-group btn-group-lg col-sm-4">
+        <div className="btn-group btn-group-lg col-sm-5">
           <button type="button" className="btn btn-default btn-block active"
             onClick={this.onClear}>Clear</button>
         </div>
-        <div className="btn-group btn-group-lg col-sm-4 pull-right">
+        <div className="btn-group btn-group-lg col-sm-5 pull-right">
           <button type="submit" className="btn btn-default btn-block active"
             onClick={this.onSubmit}>Next</button>
         </div>

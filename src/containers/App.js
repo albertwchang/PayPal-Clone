@@ -13,7 +13,7 @@ import './app.css';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Choices from '../components/Choices';
-import SendPayment from '../components/SendPayment/SendPayment';
+import SendPayment from '../components/Payment/Payment';
 import History from '../components/History/History';
 
 const header = (title) => {
@@ -31,7 +31,7 @@ const views = [
     name: 'choices'
   },
   {
-    name: 'send',
+    name: 'payment',
     action: 'Send Money'
   },
   {
@@ -52,7 +52,7 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { setView: 'choices' };
+    this.state = { setView: 'payment' };
     this.onChangeView = this.onChangeView.bind(this);
   }
 
@@ -69,7 +69,7 @@ class AppContainer extends Component {
     var view;
 
     switch (setView) {
-      case 'send':
+      case 'payment':
         view = (
           <SendPayment actions={actions} profile={currentUser}
             refs={refs} onChangeView={this.onChangeView}>

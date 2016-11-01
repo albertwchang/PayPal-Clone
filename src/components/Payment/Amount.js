@@ -3,28 +3,31 @@
  */
 import React, { Component, PropTypes } from 'react';
 import currencyFormatter from 'currency-formatter';
+import accounting from 'accounting';
 const currencies = currencyFormatter.currencies;
 
 // Helper functions
-const countDecimals = (num) => (num.split('.')[1] || []).length;
+const countDecimals = (num, decimalChar) => (num.split(decimalChar)[1] || []).length;
+const convertDecimal = (value, oldDecimal, newDecimal) => value.replace(oldDecimal, newDecimal);
 const stripDelimiters = (value, separator) => value.split(separator).join('');
-const formatAmount = (rawValue, strippedValue, currency) => {
-  var formattedAmount, decimalCnt = countDecimals(rawValue);
+const formatAmount = (inputValue, bareValue, currency) => {
+  var formattedAmount, decimalCnt = countDecimals(inputValue, currency.decimalSeparator);
 
   if (decimalCnt < currency.decimalDigits) {
-    formattedAmount = currencyFormatter.format(strippedValue, {
+    formattedAmount = currencyFormatter.format(bareValue, {
+      decimal: currency.decimalSeparator,
       precision: decimalCnt,
       thousand: currency.thousandsSeparator,
       format: '%v'
     }); // e.g. 275. => 275, 275.1 => 275.1, 275.15 => 275.15
 
-    const endChar = strippedValue.endsWith(currency.decimalSeparator)
+    const endChar = bareValue.endsWith(currency.decimalSeparator)
       ? currency.decimalSeparator
       : '';
 
     formattedAmount = formattedAmount.concat(endChar);
   } else {
-    formattedAmount = currencyFormatter.format(rawValue, {
+    formattedAmount = currencyFormatter.format(inputValue, {
       precision: currency.decimalDigits,
       format: '%v' // %s is the symbol and %v is the value
     });
@@ -55,52 +58,60 @@ class PaymentAmount extends React.Component {
   onSetAmount(el) {
     // These variables are coming from 'currency-formatter' npm module
     const { currency } = this.state;
-    const rawValue = el.target.value.trim();
+    const inputValue = el.target.value.trim().replace(currency.symbol, '');
+
+    // 1. strip away any currency symbols
+    // 2. Split inputValue based on decimal separator -- array > 2 === invalid
 
     // delimiters specific to the raw value are removed; but NOT the decimal!
-    const strippedValue = stripDelimiters(rawValue, currency.thousandsSeparator);
-    const numberValue = parseFloat(strippedValue || 0);
+    const bareValue = stripDelimiters(inputValue, currency.thousandsSeparator);
+    const numberValue = parseInt(stripDelimiters(bareValue, currency.decimalSeparator));
 
     // invalid characters result in nothing -- so previous state value is refreshed
     if (!isNaN(numberValue)) {
-      // 2. Format the value based on currency definitions
-      const newAmount = formatAmount(rawValue, strippedValue, currency);
-      this.props.onUpdateParam('amount', newAmount);
+      this.props.onUpdateParam('amount', numberValue);
     }
   }
 
   onSetCurrency(el) {
-    const currencyCode = el.target.innerText;
-    if (currencyCode !== this.state.currency.code) {
-      // ??? Thought about memoization, but curency list is  < 200 records
-      // Perhaps 'currency-formatter' module already implements memoiziation
-      this.props.onUpdateParam('currencyCode', currencyCode);
-    }
+    const newCode = el.target.innerText;
+    this.props.onUpdateParam('currencyCode', newCode);
   }
 
   render() {
+    const { currency: { code, decimalSeparator, decimalDigits, symbol } } = this.state;
     const { amount } = this.props;
-    const { currency } = this.state;
-    const trimmedAmount = stripDelimiters(amount, currency.thousandsSeparator);
-    const formattedAmount = currencyFormatter.format(trimmedAmount, {
-      decimal: currency.decimalSeparator,
-      thousand: currency.thousandsSeparator,
-      precision: currency.decimalDigits,
-      format: '%v' // %s is the symbol and %v is the value
-    });
+    //const numberValue = parseInt(amount);
+    const denominator = Math.pow(10, decimalDigits);
+    const currencySettings = {code, format: '%v'};
+    var uiValue = '';
+
+    if (amount > 0 && amount < denominator) {
+      uiValue = (amount / denominator).toString();
+    } else {
+      // find position from right of number based on currency decimal digits
+      uiValue = amount.toString();
+      const leftValue = uiValue.substr(0, uiValue.length - decimalDigits);
+      const rightValue = uiValue.substr(uiValue.length - decimalDigits);
+      uiValue = leftValue.concat(decimalSeparator).concat(rightValue);
+    }
+
+    console.log(uiValue);
+    uiValue = parseFloat(uiValue) && currencyFormatter.format(uiValue, currencySettings) || '';
+    const placeholderValue = currencyFormatter.format(0, currencySettings);
 
     return (
       <div className="form-group" name="amount">
         <div className="input-group input-group-lg">
-          <div className="input-group-addon" id="amount">
-            {currency.symbol}
-          </div>
-          <input type="text" className="form-control" value={Number(trimmedAmount) && amount || ''}
-                 placeholder={formattedAmount} onChange={this.onSetAmount}></input>
+          <span className="input-group-addon" id="currency-code">
+            {symbol}
+          </span>
+          <input type="text" className="form-control" value={uiValue}
+            onChange={this.onSetAmount} placeholder={placeholderValue}></input>
           <div className="input-group-btn">
             <button type="button" className="btn btn-default dropdown-toggle"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {currency.code}&nbsp;
+              {code}&nbsp;
               <span className="caret"></span>
             </button>
             <ul className="dropdown-menu dropdown-menu-right">{
