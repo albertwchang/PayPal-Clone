@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import Choices from '../components/Choices';
 import SendPayment from '../components/Payment/Payment';
 import History from '../components/History/History';
+import currencyFormatter, { currencies } from 'currency-formatter';
 
 const header = (title) => {
   return <div className='panel-heading'>
@@ -25,6 +26,35 @@ const header = (title) => {
 const footer = (stuff) => {
   return <div className='panel-footer'>{stuff || <div> </div>}</div>;
 };
+
+const buildUIAmt = (amount, currencyCode) => {
+  const currency = currencyFormatter.findCurrency(currencyCode);
+  const { code, decimalSeparator, decimalDigits, symbol } = currency;
+  const denominator = Math.pow(10, decimalDigits);
+  const currencySettings = {code, format: '%v'};
+  var uiValue = '';
+
+  /*
+   STORY: 'props.amount' is expected to be a whole number (without decimals!).
+   It is used to create a formatted version based on currently-selected currency
+   */
+  if (amount < denominator) {
+    /* Any amount less than denominator can be divided by it in order to get
+     decimal value */
+    uiValue = (amount / denominator).toString();
+  } else {
+    /* Values with digits > currency decimal digits required decimal decimal
+     separator insertion */
+    uiValue = amount.toString();
+    const leftValue = uiValue.substr(0, uiValue.length - decimalDigits);
+    const rightValue = uiValue.substr(uiValue.length - decimalDigits);
+    uiValue = leftValue
+      .concat(currencyFormatter.defaultCurrency.decimalSeparator)
+      .concat(rightValue);
+  }
+
+  return parseFloat(uiValue) && currencyFormatter.format(uiValue, currencySettings) || '';
+}
 
 const views = [
   {
@@ -71,8 +101,8 @@ class AppContainer extends Component {
     switch (setView) {
       case 'payment':
         view = (
-          <SendPayment actions={actions} profile={currentUser}
-            refs={refs} onChangeView={this.onChangeView}>
+          <SendPayment refs={refs} onChangeView={this.onChangeView}
+            profile={currentUser} onBuildUIAmt={buildUIAmt} actions={actions}>
             {header}
             {footer}
           </SendPayment>
@@ -81,8 +111,8 @@ class AppContainer extends Component {
 
       case 'history':
         view = (
-          <History actions={actions} profile={currentUser}
-            transactions={transactions} onChangeView={this.onChangeView}>
+          <History profile={currentUser} onChangeView={this.onChangeView}
+            actions={actions} transactions={transactions} onBuildUIAmt={buildUIAmt}>
             {header}
             {footer}
           </History>
@@ -91,7 +121,8 @@ class AppContainer extends Component {
 
       default:
         view = (
-          <Choices onChangeView={this.onChangeView} views={views.filter(v => v['action'])} profile={currentUser}>
+          <Choices views={views.filter(v => v['action'])}
+            onChangeView={this.onChangeView} profile={currentUser}>
             {header}
             {footer}
           </Choices>

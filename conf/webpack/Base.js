@@ -96,71 +96,61 @@ class WebpackBaseConfig {
               'style',
               'css?modules&importLoaders=1&localIdentName=[name]-[local]-[hash:base64:5]'
             ]
-          },
-          {
+          }, {
             test: /^.((?!cssmodule).)*\.css$/,
             loaders: [
               'style',
               'css'
             ]
-          },
-          {
+          }, {
             test: /\.cssmodule\.(sass|scss)$/,
             loaders: [
               'style',
               'css?modules&importLoaders=1&localIdentName=[name]-[local]-[hash:base64:5]',
               'sass'
             ]
-          },
-          {
+          }, {
             test: /^.((?!cssmodule).)*\.(sass|scss)$/,
             loaders: [
               'style',
               'css',
               'sass'
             ]
-          },
-          {
+          }, {
             test: /\.cssmodule\.less$/,
             loaders: [
               'style',
               'css?modules&importLoaders=1&localIdentName=[name]-[local]-[hash:base64:5]',
               'less'
             ]
-          },
-          {
+          }, {
             test: /^.((?!cssmodule).)*\.less$/,
             loaders: [
               'style',
               'css',
               'less'
             ]
-          },
-          {
+          }, {
             test: /\.cssmodule\.styl$/,
             loaders: [
               'style',
               'css?modules&importLoaders=1&localIdentName=[name]-[local]-[hash:base64:5]',
               'stylus'
             ]
-          },
-          {
+          }, {
             test: /^.((?!cssmodule).)*\.styl$/,
             loaders: [
               'style',
               'css',
               'stylus'
             ]
-          },
-          {
+          }, {
             test: /\.(png|jpg|gif|mp4|ogg|svg|woff|woff2)$/,
             loaders: ['file']
-          },
-          {
+          }, {
             test: /\.json$/,
             loaders: 'json'
-          },
-          {
+          }, {
             test: /\.(js|jsx)$/,
             include: [].concat(
               this.includedPackages,
