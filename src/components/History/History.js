@@ -21,10 +21,10 @@ const History = (props) => {
         <tbody className="history-component">{
           transactions.map((entry, index) => {
             const {recipientId, senderId, txTypeId, amount, currencyCode, timestamp} = entry;
-            const currency = currencies(currencyCode);
+            const { symbol, symbolOnLeft, spaceBetweenAmountAndSymbol } = currencies(currencyCode);
             const scenario = (senderId === profile.email) ? 'minus' : 'plus';
             const txTypeIcon = (txTypeId === 'gift') ? 'gift' : 'handshake-o';
-            const uiAmt = currency.symbol +onBuildUIAmt(amount, currencyCode);
+            const uiAmt = onBuildUIAmt(amount, currencyCode);
 
             return(
               <tr key={index}>
@@ -34,7 +34,7 @@ const History = (props) => {
                   <i className={"fa fa-" +txTypeIcon}></i>
                 </td>
                 <td className={scenario}>
-                  <i className={"fa fa-" +scenario}></i> {uiAmt}
+                  <i className={"fa fa-" +scenario}></i> {currencyFormatter.format(uiAmt, {code: currencyCode})}
                 </td>
               </tr>
             );

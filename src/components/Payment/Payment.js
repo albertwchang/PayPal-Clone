@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import emailChecker from 'email-validator';
 import moment from 'moment';
+import Balance from './Balance';
 import PaymentAmount from './Amount';
 import Recipient from './Recipient';
 import currencyFormatter from 'currency-formatter';
@@ -123,13 +124,8 @@ class SendPayment extends React.Component {
           </div>
           {footer(viewButtons)}
         </div>
-        <div className="panel panel-primary">
-          {header('Account Balance')}
-          <div className="panel-body">
-            <div className="col-xs-6 pull-left">{symbol +onBuildUIAmt(profile.balance, code)}</div>
-            <div className="col-xs-6 pull-right text-right">{code}</div>
-          </div>
-        </div>
+        <Balance amt={profile.balance} currencyCode={currencyCode}
+          onBuildUIAmt={onBuildUIAmt} header={header} />
       </div>
     );
   }

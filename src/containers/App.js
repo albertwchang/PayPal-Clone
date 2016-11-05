@@ -82,7 +82,7 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { setView: 'payment' };
+    this.state = { setView: 'history' };
     this.onChangeView = this.onChangeView.bind(this);
   }
 
