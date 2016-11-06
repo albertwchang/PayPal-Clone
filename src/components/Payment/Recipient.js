@@ -3,6 +3,7 @@
  */
 import React, { Component, PropTypes } from 'react';
 import emailChecker from 'email-validator';
+var $el;
 
 // Helper functions
 class Recipient extends React.Component {
@@ -19,10 +20,8 @@ class Recipient extends React.Component {
   }
 
   validateRecipient(el) {
-
     const email = el.target.value;
-    const $el = $('div [name="recipient"]');
-    var settings;
+    var content = '';
     const baseSettings = {
       container: 'body',
       html: false,
@@ -33,24 +32,28 @@ class Recipient extends React.Component {
     // 1. Cannot list oneself
     // 2. email address has to be complete
     if (email === this.props.myEmail) {
-      settings = Object.assign({
-        content: 'Cannot send payment to yourself'
-      }, baseSettings);
+      content = 'Cannot send payment to yourself';
     } else if (email && !emailChecker.validate(email)){
-      settings = Object.assign({
-        content: 'Invalid email'
-      }, baseSettings);
-    } else {
-      settings = baseSettings;
+      content = 'Invalid email';
     }
 
-    $el.popover(settings)
-      .on('hide.bs.popover', (e) => $(this).popover('destroy'))
-      .popover(settings['content'] ? 'show' : 'hide');
+    const settings = Object.assign({content}, baseSettings);
+
+    if (settings['content'] === '') {
+      $el && $el.popover('hide');
+    } else {
+      if (!$el) {
+        $el = $(el.currentTarget);
+      }
+
+      $el.popover(settings)
+        .on('hide.bs.popover', (e) => $(this).popover('destroy'))
+        .popover('show');
+    }
   }
 
   render() {
-    const { recipientEmail } = this.props;
+    const { emailTo } = this.props;
 
     return (
       <div className="form-group" name="recipient">
@@ -59,7 +62,7 @@ class Recipient extends React.Component {
             <i className="fa fa-user"></i>
           </span>
           <input placeholder="eg. erlich_bachman@aviato.com"
-            className="form-control" type="text" value={recipientEmail}
+            className="form-control" type="text" value={emailTo}
             onChange={this.onSetRecipient} onBlur={this.validateRecipient}></input>
         </div>
       </div>
@@ -71,7 +74,7 @@ Object.assign(Recipient, {
   displayName: 'Payment Recipient',
   PropTypes: {
     myEmail: PropTypes.string.isRequired,
-    recipientEmail: PropTypes.string.isRequired,
+    emailTo: PropTypes.string.isRequired,
     onUpdateParam: PropTypes.func.isRequired
   }
 });

@@ -11,7 +11,7 @@ const initialState = {
     last: 'Chang'
   },
   email: 'achang@xyz.com',
-  balance: 4500.00,
+  balance: 693321,
   currencyCode: 'USD'
 };
 

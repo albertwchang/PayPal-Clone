@@ -2,13 +2,32 @@
  * Created by albertwchang on 10/30/16.
  */
 import React, { Component, PropTypes } from 'react';
-import currencyFormatter from 'currency-formatter';
-import accounting from 'accounting';
-const currencies = currencyFormatter.currencies;
+import currencyFormatter, { currencies } from 'currency-formatter';
 
 // Helper functions
-const countDecimals = (num, decimalChar) => (num.split(decimalChar)[1] || []).length;
+var $el;
 const stripDelimiters = (value, separator) => value.split(separator).join('');
+const checkOverdraft = (amount, balance) => {
+  // Should not enter amount > account balance
+  if (amount > balance) {
+    const settings = {
+      container: 'body',
+      content: 'Sending more than you have?',
+      html: false,
+      placement: 'right',
+      trigger: 'manual'
+    };
+
+    if (!$el) {
+      $el = $('input[name="amount"]');
+    }
+
+    $el.popover(settings).popover('show')
+      .on('hidden.bs.popover', (e) => $(this).popover('destroy'));
+  } else {
+    $el && $el.popover('hide');
+  }
+};
 
 class Amount extends React.Component {
   constructor(props) {
@@ -27,6 +46,14 @@ class Amount extends React.Component {
         currency: currencyFormatter.findCurrency(newCurrencyCode)
       });
     }
+  }
+
+  componentWillUpdate(newProps) {
+    const { amount, balance } = newProps;
+    const oldAmt = this.props.amount;
+    const oldBalance = this.props.balance;
+    if ( (oldAmt > oldBalance && amount < balance) || (oldAmt < oldBalance && amount > balance))
+      checkOverdraft(amount, balance);
   }
 
   onSetAmount(el) {
@@ -53,46 +80,25 @@ class Amount extends React.Component {
   }
 
   render() {
-    const { currency: { code, decimalSeparator, decimalDigits, symbol } } = this.state;
-    const { amount } = this.props;
-    const denominator = Math.pow(10, decimalDigits);
-    const currencySettings = {code, format: '%v'};
-    var uiValue = '';
-
-    /*
-      STORY: 'props.amount' is expected to be a whole number (without decimals!).
-      It is used to create a formatted version based on currently-selected currency
-     */
-    if (amount < denominator) {
-      /* Any amount less than denominator can be divided by it in order to get
-        decimal value */
-      uiValue = (amount / denominator).toString();
-    } else {
-      /* Values with digits > currency decimal digits required decimal decimal
-        separator insertion */
-      uiValue = amount.toString();
-      const leftValue = uiValue.substr(0, uiValue.length - decimalDigits);
-      const rightValue = uiValue.substr(uiValue.length - decimalDigits);
-      uiValue = leftValue
-        .concat(currencyFormatter.defaultCurrency.decimalSeparator)
-        .concat(rightValue);
-    }
-
-    uiValue = parseFloat(uiValue) && currencyFormatter.format(uiValue, currencySettings) || '';
+    const { currency } = this.state;
+    const { amount, balance, onBuildUIAmt } = this.props;
+    const currencySettings = {code: currency.code, format: '%v'};
+    const uiValue = onBuildUIAmt(amount, currency.code, false);
     const placeholderValue = currencyFormatter.format(0, currencySettings);
 
     return (
       <div className="form-group" name="amount">
         <div className="input-group input-group-lg">
           <span className="input-group-addon" id="currency-code">
-            {symbol}
+            {currency.symbol}
           </span>
           <input type="text" className="form-control" value={uiValue}
+            style={balance < amount ? {color: "#FF0000"} : {}} name="amount"
             onChange={this.onSetAmount} placeholder={placeholderValue}></input>
           <div className="input-group-btn">
             <button type="button" className="btn btn-default dropdown-toggle"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {code}&nbsp;
+              {currency.code}&nbsp;
               <span className="caret"></span>
             </button>
             <ul className="dropdown-menu dropdown-menu-right">{
@@ -112,6 +118,8 @@ Object.assign(Amount, {
   displayName: 'Payment Amount',
   PropTypes: {
     amount: PropTypes.string.isRequired,
+    balance: PropTypes.string.isRequired,
+    onBuildUIAmt: PropTypes.func.isRequired,
     currencyCode: PropTypes.string.isRequired,
     onUpdateParam: PropTypes.func.isRequired
   }

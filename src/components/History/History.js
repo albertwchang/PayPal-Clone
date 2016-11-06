@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import formatCurrency from 'currency-formatter';
+import currencyFormatter from 'currency-formatter';
+import _ from 'lodash';
 
 const History = (props) => {
-  const { children: [header, footer], onChangeView, profile, transactions } = props;
+  const { children: [header, footer], onBuildUIAmt, onChangeView, profile, transactions } = props;
+  const currencies = _.memoize(currencyFormatter.findCurrency);
   const buttons =
     <div className="row">
       <div className="btn-group btn-group-lg col-sm-12">
@@ -19,9 +21,11 @@ const History = (props) => {
         <tbody className="history-component">{
           transactions.map((entry, index) => {
             const {recipientId, senderId, txTypeId, amount, currencyCode, timestamp} = entry;
+            //const { symbol, symbolOnLeft, spaceBetweenAmountAndSymbol } = currencies(currencyCode);
             const scenario = (senderId === profile.email) ? 'minus' : 'plus';
             const txTypeIcon = (txTypeId === 'gift') ? 'gift' : 'handshake-o';
-            const formattedAmt = formatCurrency.format(amount, {code: currencyCode});
+            const formattedAmt = onBuildUIAmt(amount, currencyCode, true);
+            const uiAmt = currencyFormatter.format(formattedAmt, {code: currencyCode});
 
             return(
               <tr key={index}>
@@ -31,7 +35,7 @@ const History = (props) => {
                   <i className={"fa fa-" +txTypeIcon}></i>
                 </td>
                 <td className={scenario}>
-                  <i className={"fa fa-" +scenario}></i> {formattedAmt}
+                  <i className={"fa fa-" +scenario}></i> {uiAmt}
                 </td>
               </tr>
             );
@@ -49,6 +53,7 @@ Object.assign(History, {
   displayName: 'Transaction History',
   PropTypes: {
     actions: PropTypes.object.isRequired,
+    onBuildUIAmt: PropTypes.func.isRequired,
     onChangeView: PropTypes.func.isRequired,
     profile: PropTypes.object.isRequired,
     transactions: PropTypes.array.isRequired
