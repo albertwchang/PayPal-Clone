@@ -93,8 +93,8 @@ class SendPayment extends React.Component {
         <div className='panel panel-primary'>
           {header('Send Payment')}
           <div className="panel-body">
-            <Recipient recipientEmail={recipientId}
-              myEmail={profile.email} onUpdateParam={this.onUpdateParam} />
+            <Recipient emailTo={recipientId} myEmail={profile.email}
+              onUpdateParam={this.onUpdateParam} />
             <PaymentAmount currencyCode={currencyCode} amount={amount}
               onBuildUIAmt={onBuildUIAmt} onUpdateParam={this.onUpdateParam} />
 

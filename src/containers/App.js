@@ -27,11 +27,11 @@ const footer = (stuff) => {
   return <div className='panel-footer'>{stuff || <div> </div>}</div>;
 };
 
-const buildUIAmt = (amount, currencyCode) => {
+const buildUIAmt = (amount, currencyCode, showSymbol) => {
   const currency = currencyFormatter.findCurrency(currencyCode);
-  const { code, decimalSeparator, decimalDigits, symbol } = currency;
+  const { code, decimalDigits } = currency;
   const denominator = Math.pow(10, decimalDigits);
-  const currencySettings = {code, format: '%v'};
+  const currencySettings = {code, format: '%v' +(showSymbol && ' %s' || '')};
   var uiValue = '';
 
   /*
@@ -82,7 +82,7 @@ class AppContainer extends Component {
       A) Detail view
    --------------------------------------------------------------------*/
     super(props);
-    this.state = { setView: 'history' };
+    this.state = { setView: 'payment' };
     this.onChangeView = this.onChangeView.bind(this);
   }
 

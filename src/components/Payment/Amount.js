@@ -53,7 +53,7 @@ class Amount extends React.Component {
     const { currency } = this.state;
     const { amount, onBuildUIAmt } = this.props;
     const currencySettings = {code: currency.code, format: '%v'};
-    const uiValue = onBuildUIAmt(amount, currency.code);
+    const uiValue = onBuildUIAmt(amount, currency.code, false);
     const placeholderValue = currencyFormatter.format(0, currencySettings);
 
     return (

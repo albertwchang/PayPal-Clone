@@ -50,7 +50,7 @@ class Recipient extends React.Component {
   }
 
   render() {
-    const { recipientEmail } = this.props;
+    const { emailTo } = this.props;
 
     return (
       <div className="form-group" name="recipient">
@@ -59,7 +59,7 @@ class Recipient extends React.Component {
             <i className="fa fa-user"></i>
           </span>
           <input placeholder="eg. erlich_bachman@aviato.com"
-            className="form-control" type="text" value={recipientEmail}
+            className="form-control" type="text" value={emailTo}
             onChange={this.onSetRecipient} onBlur={this.validateRecipient}></input>
         </div>
       </div>
@@ -71,7 +71,7 @@ Object.assign(Recipient, {
   displayName: 'Payment Recipient',
   PropTypes: {
     myEmail: PropTypes.string.isRequired,
-    recipientEmail: PropTypes.string.isRequired,
+    emailTo: PropTypes.string.isRequired,
     onUpdateParam: PropTypes.func.isRequired
   }
 });

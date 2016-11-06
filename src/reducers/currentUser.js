@@ -11,8 +11,8 @@ const initialState = {
     last: 'Chang'
   },
   email: 'achang@xyz.com',
-  balance: 4500.00,
-  currencyCode: 'USD'
+  balance: 45000,
+  currencyCode: 'CNY'
 };
 
 function currentUserReducer(state = initialState, action) {
