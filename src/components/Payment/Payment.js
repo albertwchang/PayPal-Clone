@@ -89,43 +89,39 @@ class SendPayment extends React.Component {
       </div>;
 
     return (
-      <div className="container-fluid">
-        <div className='panel panel-primary'>
-          {header('Send Payment')}
-          <div className="panel-body">
-            <Recipient emailTo={recipientId} myEmail={profile.email}
-              onUpdateParam={this.onUpdateParam} />
-            <PaymentAmount currencyCode={currencyCode} amount={amount}
-              onBuildUIAmt={onBuildUIAmt} onUpdateParam={this.onUpdateParam} />
-
-            <div className="form-group" name="message">
-              <textarea type="text" className="form-control" rows="4"
-                maxLength="140" placeholder="Message (optional, 140 char limit)"
-                cols="100" value={message} onChange={this.onSetMessage}></textarea>
-            </div>
-
-            <div className="row container-fluid" name="transaction-type">
-              <div className="form-group">
-                <div>What's this payment for?</div>
-                <div className="btn-group btn-group-lg btn-group-vertical btn-block">{
-                  txTypes.map(type => {
-                    const isSet = txType === type.name;
-                    return (
-                      <a key={type.name} type="button" className="text-center" onClick={this.onSetTxType}
-                        className={"btn btn-default btn-lg" +(isSet && ' active')} data-id={type.name}>{type.description}
-                        {isSet ? <i className="fa fa-check pull-right"></i> : ''}
-                      </a>
-                    );
-                  })
-                }
-                </div>
+      <div className="panel panel-primary">
+        {header('Send Payment')}
+        <div className="panel-body">
+          <Recipient emailTo={recipientId} myEmail={profile.email}
+            onUpdateParam={this.onUpdateParam} />
+          <Balance header={header} currencyCode={currencyCode}
+            onBuildUIAmt={onBuildUIAmt} amt={profile.balance} />
+          <PaymentAmount currencyCode={currencyCode} balance={profile.balance}
+            amount={amount} onBuildUIAmt={onBuildUIAmt} onUpdateParam={this.onUpdateParam} />
+          <div className="form-group" name="message">
+            <textarea type="text" className="form-control" rows="4"
+              maxLength="140" placeholder="Message (optional, 140 char limit)"
+              cols="100" value={message} onChange={this.onSetMessage}></textarea>
+          </div>
+          <div className="row container-fluid" name="transaction-type">
+            <div className="form-group">
+              <div className="container-fluid">What's this payment for?</div>
+              <div className="btn-group btn-group-lg btn-group-vertical btn-block">{
+                txTypes.map(type => {
+                  const isSet = txType === type.name;
+                  return (
+                    <a key={type.name} type="button" className="text-center" onClick={this.onSetTxType}
+                      className={"btn btn-default btn-lg" +(isSet && ' active')} data-id={type.name}>{type.description}
+                      {isSet ? <i className="fa fa-check pull-right"></i> : ''}
+                    </a>
+                  );
+                })
+              }
               </div>
             </div>
           </div>
-          {footer(viewButtons)}
         </div>
-        <Balance amt={profile.balance} currencyCode={currencyCode}
-          onBuildUIAmt={onBuildUIAmt} header={header} />
+        {footer(viewButtons)}
       </div>
     );
   }

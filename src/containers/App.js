@@ -4,10 +4,7 @@
  *          This modifications only run once when the generator is invoked - if
  *          you edit them, they are not updated again.
  */
-import React, {
-  Component,
-  PropTypes
-} from 'react';
+import React, { Component,PropTypes } from 'react';
 import '../actions/';
 import './app.css';
 import { bindActionCreators } from 'redux';
@@ -159,4 +156,5 @@ function mapDispatchToProps(dispatch) {
   const actionMap = { actions: bindActionCreators(actions, dispatch) };
   return actionMap;
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(AppContainer);

@@ -5,7 +5,29 @@ import React, { Component, PropTypes } from 'react';
 import currencyFormatter, { currencies } from 'currency-formatter';
 
 // Helper functions
+var $el;
 const stripDelimiters = (value, separator) => value.split(separator).join('');
+const checkOverdraft = (amount, balance) => {
+  // Should not enter amount > account balance
+  if (amount > balance) {
+    const settings = {
+      container: 'body',
+      content: 'Sending more than you have?',
+      html: false,
+      placement: 'right',
+      trigger: 'manual'
+    };
+
+    if (!$el) {
+      $el = $('input[name="amount"]');
+    }
+
+    $el.popover(settings).popover('show')
+      .on('hidden.bs.popover', (e) => $(this).popover('destroy'));
+  } else {
+    $el && $el.popover('hide');
+  }
+};
 
 class Amount extends React.Component {
   constructor(props) {
@@ -24,6 +46,14 @@ class Amount extends React.Component {
         currency: currencyFormatter.findCurrency(newCurrencyCode)
       });
     }
+  }
+
+  componentWillUpdate(newProps) {
+    const { amount, balance } = newProps;
+    const oldAmt = this.props.amount;
+    const oldBalance = this.props.balance;
+    if ( (oldAmt > oldBalance && amount < balance) || (oldAmt < oldBalance && amount > balance))
+      checkOverdraft(amount, balance);
   }
 
   onSetAmount(el) {
@@ -51,7 +81,7 @@ class Amount extends React.Component {
 
   render() {
     const { currency } = this.state;
-    const { amount, onBuildUIAmt } = this.props;
+    const { amount, balance, onBuildUIAmt } = this.props;
     const currencySettings = {code: currency.code, format: '%v'};
     const uiValue = onBuildUIAmt(amount, currency.code, false);
     const placeholderValue = currencyFormatter.format(0, currencySettings);
@@ -63,6 +93,7 @@ class Amount extends React.Component {
             {currency.symbol}
           </span>
           <input type="text" className="form-control" value={uiValue}
+            style={balance < amount ? {color: "#FF0000"} : {}} name="amount"
             onChange={this.onSetAmount} placeholder={placeholderValue}></input>
           <div className="input-group-btn">
             <button type="button" className="btn btn-default dropdown-toggle"
@@ -87,6 +118,7 @@ Object.assign(Amount, {
   displayName: 'Payment Amount',
   PropTypes: {
     amount: PropTypes.string.isRequired,
+    balance: PropTypes.string.isRequired,
     onBuildUIAmt: PropTypes.func.isRequired,
     currencyCode: PropTypes.string.isRequired,
     onUpdateParam: PropTypes.func.isRequired
