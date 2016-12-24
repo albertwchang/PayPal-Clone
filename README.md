@@ -16,15 +16,6 @@
 8. With transaction items (History view), include icons to distinguish between 'gifts' vs. 'business' transactions, and 'received' vs. 'sent'
 9. 'Send Payment' view should have a "Back" navigation of some sort.
 
-## Update (10/30/16 at 6:11p)
-1. Only Front-end has been worked on, which is NOT yet complete (about 75% done), but can be installed, and run locally
-2. Bugs:
-  A) Aftering entering last allowed decimal in payment amt input, last decimal may continue to +1
-  B) Recipient input field stays w/ same error message despite being different errors.
-  Example: going onBlur aftering entering "abc@paypal" will popover of "Invalid email";
-   but changing entry to same email address as your own gives the same popover error --
-   should be "You cannot send money to yourself"
-
 ## SETUP & INSTALL
 1. Clone this repo
 2. Go into the cloned project via CLI, and then run 'npm install' within the directory
@@ -32,6 +23,3 @@
 4. Run 'npm install webpack-dev-server -g'
 5. (Despite seeing error messages regarding peer dependencies) Run 'npm install webpack@2.1.0-beta.6'
 6. Lastly, run 'npm start'. Internet browser will navigate to http://localhost:4567. No other installs needed as app is currently not running an app server
-
-*** You can run the app in Webstorm by adding an NPM script...
-![Screen Shot 2016-10-31 at 4.59.04 PM.png](https://bitbucket.org/repo/xbaz94/images/1407538555-Screen%20Shot%202016-10-31%20at%204.59.04%20PM.png)
