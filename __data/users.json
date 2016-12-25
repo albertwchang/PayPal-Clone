@@ -11,13 +11,13 @@
     currencyCode: 'USD'
   }, {
     name: {
-      first: 'Myron',
-      last: 'Yeung'
+      first: 'Joe',
+      last: 'Schmoe'
     },
-    email: 'myeung@abc.com',
+    email: 'jschmoe@generic.com',
     password: 'test',
     transactions: [],
-    balance: 45222500.00,
+    balance: 75252.00,
     currencyCode: 'USD'
   }, {
     name: {
